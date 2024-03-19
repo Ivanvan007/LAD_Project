@@ -14,6 +14,13 @@ dfGPlayStore = pd.read_csv(full_path)
 print("----------CSV Reading Finished---------\n")
 
 print("\n")
-
+print("--------Intial Description--------")
 variables_list = dfGPlayStore.columns.tolist()
-print(variables_list)
+print("Variables List: " +
+      "\t ".join([x + "," if (y + 1) % 3 != 0 else x + ",\n" for y, x in enumerate(variables_list)]))
+numeric_columns = dfGPlayStore.select_dtypes(include=['number']).columns.tolist()
+print("Numeric Variables: " +
+      "\t ".join([x + "," if (y + 1) % 3 != 0 else x + ",\n" for y, x in enumerate(numeric_columns)]))
+print("\n")
+dataSetDescription = dfGPlayStore.describe()
+print(dataSetDescription)
