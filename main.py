@@ -9,12 +9,12 @@ file_name = "Google-Playstore.csv"
 file_path = "Data/"
 full_path = os.path.join(file_path, file_name)
 #full_path = "Data/Google-Playstore.csv"
-print("-----------Start CSV Reading----------")
+print("---------------Start CSV Reading---------------")
 dfGPlayStore = pd.read_csv(full_path)
-print("----------CSV Reading Finished---------\n")
+print("---------------CSV Reading Finished------------\n")
 
 print("\n")
-print("--------Intial Description--------")
+print("---------------Intial Description--------------")
 variables_list = dfGPlayStore.columns.tolist()
 print("Variables List: " +
       "\t ".join([x + "," if (y + 1) % 3 != 0 else x + ",\n" for y, x in enumerate(variables_list)]))
@@ -24,3 +24,17 @@ print("Numeric Variables: " +
 print("\n")
 dataSetDescription = dfGPlayStore.describe()
 print(dataSetDescription)
+print("\n")
+print("--------Info--------")
+dfGPlayStore.info()
+
+covariancia = dfGPlayStore[numeric_columns].cov()
+correlacao = dfGPlayStore[numeric_columns].corr()
+
+print("\n")
+print("--------Covariance-------")
+print(covariancia)
+print("--------Correlation--------")
+print(correlacao)
+
+print("---------------END Of Description---------------\n")
