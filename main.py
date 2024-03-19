@@ -15,21 +15,5 @@ print("----------CSV Reading Finished---------\n")
 
 print("\n")
 
-t0 = time.time()
-print(t0)
-variables_list = [x for x in dfGPlayStore.columns]
+variables_list = dfGPlayStore.columns.tolist()
 print(variables_list)
-t1 = time.time()
-print(t1-t0)
-
-print("\n---------------------------------\n")
-
-t2 = time.time()
-print(t2)
-variables_list2 = dfGPlayStore.columns.tolist()
-print(variables_list2)
-t3 = time.time()
-print(t3-t2)
-
-print("\n")
-print(t3-t0)
