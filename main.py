@@ -2,8 +2,9 @@ import os
 import pandas as pd
 import time
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.preprocessing import MinMaxScaler
 
 file_name = "Google-Playstore.csv"
 file_path = "Data/"
@@ -38,3 +39,16 @@ print("--------Correlation--------")
 print(correlacao)
 
 print("---------------END Of Description---------------\n")
+
+#dataSetToNumpy = dfGPlayStore.to_numpy()
+#numericDataSetToNumpy = dfGPlayStore[numeric_columns].to_numpy()
+
+#sns.histplot(dfGPlayStore)
+#plt.figure()
+#sns.histplot(dfGPlayStore[numeric_columns])
+#plt.figure()
+
+sns.heatmap(correlacao, annot=True)
+plt.figure()
+sns.heatmap(covariancia, annot=True)
+plt.show()
