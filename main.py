@@ -11,7 +11,8 @@ file_path = "Data/"
 full_path = os.path.join(file_path, file_name)
 #full_path = "Data/Google-Playstore.csv"
 print("---------------Start CSV Reading---------------")
-dfGPlayStore = pd.read_csv(full_path)
+dfGPlayStore = pd.read_csv(full_path,nrows=180000)
+
 print("---------------CSV Reading Finished------------\n")
 
 print("\n")
@@ -29,14 +30,14 @@ print("\n")
 print("--------Info--------")
 dfGPlayStore.info()
 
-covariancia = dfGPlayStore[numeric_columns].cov()
-correlacao = dfGPlayStore[numeric_columns].corr()
+covariance = dfGPlayStore[numeric_columns].cov()
+correlation = dfGPlayStore[numeric_columns].corr()
 
 print("\n")
 print("--------Covariance-------")
-print(covariancia)
+print(covariance)
 print("--------Correlation--------")
-print(correlacao)
+print(correlation)
 
 print("---------------END Of Description---------------\n")
 
@@ -48,7 +49,19 @@ print("---------------END Of Description---------------\n")
 #sns.histplot(dfGPlayStore[numeric_columns])
 #plt.figure()
 
-sns.heatmap(correlacao, annot=True)
+
+
+sns.histplot(x='Rating', y='Installs', data=dfGPlayStore)
+plt.title('Histograma : Rating vs Installs')
 plt.figure()
-sns.heatmap(covariancia, annot=True)
+sns.barplot(x='Rating', y='Installs', data=dfGPlayStore)
+plt.title('Gráfico de Barras: Rating vs Installs')
+plt.figure()
+
+
+sns.heatmap(correlation, annot=True)
+plt.title('Heatmap Correlation')
+plt.figure()
+sns.heatmap(covariance, annot=True)
+plt.title('Heatmap Covariance')
 plt.show()
