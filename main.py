@@ -19,6 +19,7 @@ dfGPlayStore = pd.read_csv(full_path,nrows=180000)
 #CSV File Reading Finished
 
 print("---------------Tarefa 1: Descrição do Dataset--------------")
+print("Descrição da tarefa: Fazer uma descrição das características do dataset (e.g., domínio, tamanho, tipos de dados, entidades, etc.")
 #Domain
 print("Domínio: aplicações mobile disponíveis na Google Play Store.")
 #Size
@@ -33,6 +34,7 @@ print("Acima apresentam-se os tipos de dados de cada coluna do dataset. De acord
 print("Entidades: são as apps (linhas do dataset).")
 
 print("---------------Tarefa 2: Análise Estatística--------------")
+print("Descrição da tarefa: desenvolver uma análise estatística utilizando medidas como a média, a variância, covariância, ou correlações.")
 #Average
 print("Média:")
 dataSetDescription = dfGPlayStore.describe()
@@ -63,6 +65,7 @@ print(correlation)
 
 
 print("-----------Tarefa 3: Representação Gráfica dos Resultados-----------")
+print("Descrição da tarefa: fazer uma representação gráfica e coerente dos resultados.")
 
 print("-----------1. Histograma do Rating-----------")
 
@@ -200,7 +203,7 @@ plt.title('Proportion of Free Apps vs Paid Ones')
 plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 plt.savefig('Graficos/ProportionOfFreeAppsVsPaidOnes.png')
 
-print("-----------7. Bar Chart of Top 10 Categories by Maximum Installs-----------")
+print("-----------7. Bar Chart of Categories by Maximum Installs-----------")
 #InstallsPerCategory
 downloads_per_category = dfGPlayStore.groupby('Category')['Maximum Installs'].sum().reset_index()
 downloads_per_category = downloads_per_category.sort_values(by='Maximum Installs', ascending=False)
@@ -258,32 +261,9 @@ plt.tight_layout()
 plt.savefig('Graficos/HeatmapCorrelation.png')
 
 
-#1.Histogramas para todas as colunas que dão para fazer histogramas
+print("-----------Gráficos Adicionais-----------")
 
-#1.1-Histograma para a coluna Category
-
-#Confirmação com prints na consola
-# Contando o número de ocorrências de cada categoria
-contagem_categorias = dfGPlayStore['Category'].value_counts()
-
-# Imprimindo os valores de contagem para cada categoria
-print("Contagem de Apps por Categoria:")
-#Imprimir contagem_categorias por ordem decrescente de contagem
-print(contagem_categorias.sort_values(ascending=False))
-
-# Somando todos os counts para obter o total
-total_apps = contagem_categorias.sum()
-
-# Imprimindo o total de apps
-print("\nTotal de Apps:", total_apps)
-
-
-
-
-
-
-
-#1.3-Histograma para a coluna Installs
+print("----1. Gráfico de Barras para a coluna Installs----")
 
 #Confirmação com prints na consola
 
@@ -346,12 +326,10 @@ for p in ax.patches:
     x = width + ax.get_xlim()[1] * 0.01
     ax.annotate(f'{int(width)}', (x, y), va='center')
 plt.tight_layout()
-plt.savefig('Graficos/Histograma_Installs_Column.png')
+plt.savefig('Graficos/Bar_chart_Installs_Column.png')
 
 
-
-
-#1.4-Histograma para a coluna Minimum Installs
+print("----2. Gráfico de Barras para a coluna Minimum Installs")
 
 #Confirmação com prints na consola
 
@@ -415,12 +393,10 @@ for p in ax.patches:
     x = width + ax.get_xlim()[1] * 0.01
     ax.annotate(f'{int(width)}', (x, y), va='center')
 plt.tight_layout()
-plt.savefig('Graficos/Histograma_Minimum_Installs_Column.png')
+plt.savefig('Graficos/Bar_Chart_Minimum_Installs_Column.png')
 
 
-
-
-#1.5-Histograma para a coluna Free
+print("----3. Gráfico de Barras para a coluna Free")
 
 #Confirmação com prints na consola
 
@@ -447,9 +423,6 @@ total_apps = contagem_total.sum()
 print("\nTotal de Apps (incluindo nulos):", total_apps)
 
 #Gráfico
-import matplotlib.pyplot as plt
-import seaborn as sns
-import pandas as pd
 
 # Mapeamento de True/False para Free/Paid, tratando nulos separadamente
 dfGPlayStore['Free_Paid'] = dfGPlayStore['Free'].map({True: 'Gratuitas', False: 'Pagas'}).fillna('Nulos')
@@ -485,10 +458,11 @@ for p in ax.patches:
 
 plt.tight_layout()
 plt.xlabel('Modalidade de Preço', labelpad=10)
-plt.savefig('Graficos/Histograma_Free_Column.png')
+plt.savefig('Graficos/Bar_Chart_Free_Column.png')
 
 
-#1.6-Histograma para a coluna Price
+
+print("----4. Gráfico de Barras para a coluna Price----")
 
 
 #Confirmação com prints na consola
@@ -554,10 +528,10 @@ for p in ax.patches:
                 ha='left', va='center', xytext=(5, 0), textcoords='offset points')
 
 plt.tight_layout()
-plt.savefig('Graficos/Histograma_Price_Column.png')
+plt.savefig('Graficos/Bar_Chart_Price_Column.png')
 
 
-#1.7-Histograma para a coluna Currency
+print("----5. Gráfico de Barras para a coluna Currency----")
 
 
 # Contando o número de ocorrências para cada moeda, excluindo nulos
@@ -602,15 +576,10 @@ for p in ax.patches:
                 ha='center', va='bottom', xytext=(0, 10), textcoords='offset points')
 
 plt.tight_layout()
-plt.savefig('Graficos/Histograma_Currency_Column.png')
+plt.savefig('Graficos/Bar_Chart_Currency_Column.png')
 
 
-
-
-
-
-
-
+print("----6. Average Rating Of Free Apps Vs Paid Ones----")
 #AverageRatingOfFreeAppsVsPaidOnes
 mean_rating_free = dfGPlayStore[dfGPlayStore['Free']]['Rating'].mean()
 mean_rating_paid = dfGPlayStore[~dfGPlayStore['Free']]['Rating'].mean()
@@ -632,7 +601,7 @@ count_per_category_paid = dfGPlayStore[~dfGPlayStore['Free']].groupby('Category'
 count_per_category_paid.columns = ['Category', 'Paid Apps']
 count_per_category_paid = count_per_category_paid.sort_values(by='Paid Apps', ascending=False)
 
-
+print("----7. Number Of Paid Apps Per Category----")
 #NumberOfPaidAppsPerCategory
 plt.figure(figsize=(10, 6))
 plt.bar(count_per_category_paid['Category'], count_per_category_paid['Paid Apps'], color='salmon')
@@ -643,6 +612,7 @@ plt.title('Number of Paid Apps per Category')
 plt.tight_layout()
 plt.savefig('Graficos/NumberOfPaidAppsPerCategory.png')
 
+print("----8. Number Of Free Apps Per Category")
 #NumberOfFreeAppsPerCategory
 plt.figure(figsize=(10, 6))
 plt.bar(count_per_category_free['Category'], count_per_category_free['Free Apps'], color='skyblue')
@@ -653,6 +623,8 @@ plt.title('Number of Free Apps per Category')
 plt.tight_layout()
 plt.savefig('Graficos/NumberOfFreeAppsPerCategory.png')
 
+
+print("----9. Proportion Of Free Apps Per Rating")
 #ProportionOfFreeAppsPerRating
 mean_free_by_Rating = dfGPlayStore.groupby('Rating')['Free'].mean().reset_index()
 mean_free_by_Rating['Free'] *= 100
@@ -667,6 +639,8 @@ plt.ylim(91, 101)
 plt.tight_layout()
 plt.savefig('Graficos/ProportionOfFreeAppsPerRating.png')
 
+
+print("----10. Proportion Of Free Apps Per Category")
 #ProportionOfFreeAppsPerCategory
 mean_free_by_category = dfGPlayStore.groupby('Category')['Free'].mean().reset_index()
 mean_free_by_category['Free'] *= 100
@@ -680,3 +654,6 @@ plt.xticks(rotation=90, ha='right')
 plt.ylim(91, 101)
 plt.tight_layout()
 plt.savefig('Graficos/ProportionOfFreeAppsPerCategory.png')
+
+print("------------------Tarefa 4: Análise Crítica------------------")
+print("Nesta secção, os dados e gráficos produzidos nas tarefas anteriores serão analisados criticamente.")
