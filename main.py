@@ -7,6 +7,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression, LogisticRegression, Ridge, Lasso
+from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import SVR
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.neural_network import MLPRegressor
+from sklearn.metrics import mean_squared_error
 
 file_name = "Google-Playstore.csv"
 file_path = "Data/"
@@ -657,3 +666,117 @@ plt.savefig('Graficos/ProportionOfFreeAppsPerCategory.png')
 
 print("------------------Tarefa 4: Análise Crítica------------------")
 print("Nesta secção, os dados e gráficos produzidos nas tarefas anteriores serão analisados criticamente.")
+
+print("-------------------------------------------------------------")
+print("-------------------- PARTE 2 --------------------------------")
+print("-------------------------------------------------------------")
+
+print("---------------Task 5: Identify Learning Feature and Final Goal--------------")
+print("Brief description of the task: Identify Learning Feature and Final Goal (prediction ou classification).")
+# Procedure
+print("In this case the target variable is 'Installs' then the final goal is preview/prediction")
+print("-------------------------------------")
+
+print("---------------Task 6: Machine Learning Models Application and Comparison--------------")
+print("Brief description of the task: Apply and compare different Machine Learning models.")
+print("Tools/Software necessary: Python (with scikit-learn for model implementation, excluding auto-sklearn as project restriction).")
+
+# Preprocess the data
+print("1. Preprocessing the data:")
+
+dfGPlayStore.dropna(subset=['Installs'], inplace=True)
+dfGPlayStore['Installs'] = dfGPlayStore['Installs'].str.replace(',', '').str.replace('+', '').astype(int)
+# Define features and target variable
+features = dfGPlayStore.drop(columns=['Installs', 'App Name', 'Last Updated', 'Current Ver', 'Android Ver'])  # Excluindo colunas irrelevantes
+target = dfGPlayStore['Installs']
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, random_state=42)
+
+# Scale/normalize if necessary
+# (If needed, apply scaling or normalization)
+
+# Choose at least two different Machine Learning algorithms suitable for the goal
+print("2. Choosing Machine Learning algorithms:")
+
+
+# Initialize the models
+linear_reg = LinearRegression()
+logistic_reg = LogisticRegression()
+ridge_reg = Ridge()
+lasso_reg = Lasso()
+naive_bayes = GaussianNB()
+svm = SVR()
+knn = KNeighborsRegressor()
+decision_tree = DecisionTreeRegressor()
+random_forest = RandomForestRegressor()
+neural_network = MLPRegressor()
+
+# Train each model on the training set
+print("3. Training each model:")
+linear_reg.fit(X_train, y_train)
+logistic_reg.fit(X_train, y_train)
+ridge_reg.fit(X_train, y_train)
+lasso_reg.fit(X_train, y_train)
+naive_bayes.fit(X_train, y_train)
+svm.fit(X_train, y_train)
+knn.fit(X_train, y_train)
+decision_tree.fit(X_train, y_train)
+random_forest.fit(X_train, y_train)
+neural_network.fit(X_train, y_train)
+
+# Evaluate and compare their performance on the test set using appropriate metrics
+print("4. Evaluating and comparing model performance:")
+
+
+# Create a dictionary to store model performance
+model_performance = {}
+
+# Linear Regression
+linear_reg_pred = linear_reg.predict(X_test)
+linear_reg_mse = mean_squared_error(y_test, linear_reg_pred)
+model_performance['Linear Regression'] = linear_reg_mse
+
+# Logistic Regression - Not suitable for regression problems
+
+# Ridge and Lasso Regression
+ridge_reg_pred = ridge_reg.predict(X_test)
+ridge_reg_mse = mean_squared_error(y_test, ridge_reg_pred)
+model_performance['Ridge Regression'] = ridge_reg_mse
+
+lasso_reg_pred = lasso_reg.predict(X_test)
+lasso_reg_mse = mean_squared_error(y_test, lasso_reg_pred)
+model_performance['Lasso Regression'] = lasso_reg_mse
+
+# Naïve Bayes - Not suitable for regression problems
+
+# SVM
+svm_pred = svm.predict(X_test)
+svm_mse = mean_squared_error(y_test, svm_pred)
+model_performance['SVM'] = svm_mse
+
+# K-NN
+knn_pred = knn.predict(X_test)
+knn_mse = mean_squared_error(y_test, knn_pred)
+model_performance['K-NN'] = knn_mse
+
+# Decision Trees
+decision_tree_pred = decision_tree.predict(X_test)
+decision_tree_mse = mean_squared_error(y_test, decision_tree_pred)
+model_performance['Decision Tree'] = decision_tree_mse
+
+# Random Forest
+random_forest_pred = random_forest.predict(X_test)
+random_forest_mse = mean_squared_error(y_test, random_forest_pred)
+model_performance['Random Forest'] = random_forest_mse
+
+# Neural Networks
+neural_network_pred = neural_network.predict(X_test)
+neural_network_mse = mean_squared_error(y_test, neural_network_pred)
+model_performance['Neural Network'] = neural_network_mse
+
+# Display model performance
+print("Model Performance (Mean Squared Error):")
+for model, mse in model_performance.items():
+    print(f"{model}: {mse}")
+
+# Additional analysis for specific models (e.g., Decision Trees, Random Forest) can be performed here
