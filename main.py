@@ -685,6 +685,18 @@ print("Tools/Software necessary: Python (with scikit-learn for model implementat
 # Preprocess the data
 print("1. Preprocessing the data:")
 
+print("-------------------------------------")
+print(dfGPlayStore.dtypes)
+print("-------------------------------------")
+
+# Print the head of each column
+for col in dfGPlayStore.columns:
+    print(f"{col}: {dfGPlayStore[col].head()}")
+    print("-------------------------------------")
+
+
+
+
 # Handle NaN values
 
 # Fill NaN values with a specific value
