@@ -6,6 +6,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, LogisticRegression, Ridge, Lasso
@@ -15,7 +16,7 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.neural_network import MLPRegressor
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, r2_score
 
 file_name = "Google-Playstore.csv"
 file_path = "Data/"
@@ -684,27 +685,123 @@ print("Tools/Software necessary: Python (with scikit-learn for model implementat
 # Preprocess the data
 print("1. Preprocessing the data:")
 
-dfGPlayStore.dropna(subset=['Installs'], inplace=True)
-dfGPlayStore['Installs'] = dfGPlayStore['Installs'].str.replace(',', '').str.replace('+', '').astype(int)
-# Define features and target variable
-features = dfGPlayStore.drop(columns=['Installs', 'App Name', 'Last Updated', 'Current Ver', 'Android Ver'])  # Excluindo colunas irrelevantes
+# Handle NaN values
+
+# Fill NaN values with a specific value
+num_cols = dfGPlayStore.select_dtypes(include=[np.number]).columns.tolist()
+
+cat_cols = dfGPlayStore.select_dtypes(include=['object']).columns.tolist()
+cat_cols.append('Released')
+
+for col in num_cols:
+    dfGPlayStore[col] = dfGPlayStore[col].fillna(dfGPlayStore[col].mean())
+
+for col in cat_cols:
+    dfGPlayStore[col] = dfGPlayStore[col].fillna(dfGPlayStore[col].mode()[0])
+
+print(dfGPlayStore.isna().sum())
+print("-------------------------------------")
+print(dfGPlayStore.dtypes)
+print("-------------------------------------")
+
+'''
+# For numerical columns
+num_imputer = SimpleImputer(strategy='mean')
+dfGPlayStore[num_cols] = num_imputer.fit_transform(dfGPlayStore[num_cols])
+print(num_cols)
+
+# For categorical columns
+cat_imputer = SimpleImputer(strategy='most_frequent')
+dfGPlayStore[cat_cols] = cat_imputer.fit_transform(dfGPlayStore[cat_cols])
+print(cat_cols)
+'''
+
+print(dfGPlayStore['Installs'].head())
+# Convert the 'Installs' column to integer
+dfGPlayStore['Installs'] = dfGPlayStore['Installs'].str.replace(',', '').str.replace('+', '').astype(float)
+
+'''
+# Convert all categorical columns to 'object' data type
+dfGPlayStore[cat_cols] = dfGPlayStore[cat_cols].astype('object')
+
+# Now apply the SimpleImputer
+cat_imputer = SimpleImputer(strategy='most_frequent')
+dfGPlayStore[cat_cols] = cat_imputer.fit_transform(dfGPlayStore[cat_cols])
+
+# Convert all columns to their appropriate data types
+dfGPlayStore = dfGPlayStore.convert_dtypes()
+
+# Define numerical and categorical columns
+num_cols = dfGPlayStore.select_dtypes(include=[np.number]).columns.tolist()
+cat_cols = dfGPlayStore.select_dtypes(include=[object]).columns.tolist()
+
+# For numerical columns
+num_imputer = SimpleImputer(strategy='mean')
+dfGPlayStore[num_cols] = num_imputer.fit_transform(dfGPlayStore[num_cols])
+
+# For categorical columns
+cat_imputer = SimpleImputer(strategy='most_frequent')
+dfGPlayStore[cat_cols] = cat_imputer.fit_transform(dfGPlayStore[cat_cols])
+'''
+
+
+# Define target variable
 target = dfGPlayStore['Installs']
+features = dfGPlayStore.drop(columns=['Installs', 'App Name'])
+
 # Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, random_state=42)
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.3, random_state=42) #, random_state=42
 
 # Scale/normalize if necessary
 # (If needed, apply scaling or normalization)
 
-# Choose at least two different Machine Learning algorithms suitable for the goal
+
+# Choose different Machine Learning algorithms suitable for the goal
+print("2. Choosing Machine Learning algorithms:")
+modelos = {
+    'Linear Regression': LinearRegression(),
+    'Ridge Regression': Ridge(),
+    'Lasso Regression': Lasso(),
+    'SVM': SVR(),
+    'K-NN': KNeighborsRegressor(),
+    'Decision Tree': DecisionTreeRegressor(),
+    'Random Forest': RandomForestRegressor(),
+    'Neural Network': MLPRegressor(max_iter=500)
+}
+
+print("3. Training each model:")
+model_performance = {}
+
+for nome, modelo in modelos.items():
+    modelo.fit(X_train, y_train)
+    predicoes = modelo.predict(X_test)
+    mse = mean_squared_error(y_test, predicoes)
+    model_performance[nome] = mse
+
+print("4. Evaluating and comparing model performance:")
+print("Model Performance (Mean Squared Error):")
+for modelo, mse in model_performance.items():
+    print(f"{modelo}: {mse}")
+
+# Additionally, calculate and display the R2 score for each model
+print("\nModel Performance (R2 Score):")
+for nome, modelo in modelos.items():
+    predictions = modelo.predict(X_test)
+    r2 = r2_score(y_test, predictions)
+    print(f"{nome}: {r2}")
+
+
+'''
+
+# Choose different Machine Learning algorithms suitable for the goal
 print("2. Choosing Machine Learning algorithms:")
 
 
 # Initialize the models
 linear_reg = LinearRegression()
-logistic_reg = LogisticRegression()
 ridge_reg = Ridge()
 lasso_reg = Lasso()
-naive_bayes = GaussianNB()
 svm = SVR()
 knn = KNeighborsRegressor()
 decision_tree = DecisionTreeRegressor()
@@ -714,10 +811,8 @@ neural_network = MLPRegressor()
 # Train each model on the training set
 print("3. Training each model:")
 linear_reg.fit(X_train, y_train)
-logistic_reg.fit(X_train, y_train)
 ridge_reg.fit(X_train, y_train)
 lasso_reg.fit(X_train, y_train)
-naive_bayes.fit(X_train, y_train)
 svm.fit(X_train, y_train)
 knn.fit(X_train, y_train)
 decision_tree.fit(X_train, y_train)
@@ -732,8 +827,9 @@ print("4. Evaluating and comparing model performance:")
 model_performance = {}
 
 # Linear Regression
+#linear_reg_score = linear_reg.score(X_test, y_test)
 linear_reg_pred = linear_reg.predict(X_test)
-linear_reg_mse = mean_squared_error(y_test, linear_reg_pred)
+linear_reg_mse = (np.sqrt(mean_squared_error(y_test, linear_reg_pred)))
 model_performance['Linear Regression'] = linear_reg_mse
 
 # Logistic Regression - Not suitable for regression problems
@@ -780,3 +876,4 @@ for model, mse in model_performance.items():
     print(f"{model}: {mse}")
 
 # Additional analysis for specific models (e.g., Decision Trees, Random Forest) can be performed here
+'''
