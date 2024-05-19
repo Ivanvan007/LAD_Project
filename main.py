@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, LogisticRegression, Ridge, Lasso
 from sklearn.naive_bayes import GaussianNB
@@ -689,27 +689,36 @@ print("-------------------------------------")
 print(dfGPlayStore.dtypes)
 print("-------------------------------------")
 
-# Print the head of each column
+# Print the head and tails of each column
+print("Head and Tails of each column:")
+print("-------------------------------------")
+
 for col in dfGPlayStore.columns:
+    print("Head")
     print(f"{col}: {dfGPlayStore[col].head()}")
+    print("-------------------------------------")
+    print("Tail")
+    print(f"{col}: {dfGPlayStore[col].tail()}")
     print("-------------------------------------")
 
 
-
+# Define target variable
+target = dfGPlayStore['Installs']
+features = dfGPlayStore[['Rating', 'Rating Count', 'Free', 'Price', 'Ad Supported', 'In App Purchases', 'Editors Choice', 'Size_MB', 'Category']]
 
 # Handle NaN values
 
 # Fill NaN values with a specific value
-num_cols = dfGPlayStore.select_dtypes(include=[np.number]).columns.tolist()
+num_cols = features.select_dtypes(include=[np.number]).columns.tolist() # troquei o sitio que diz features por dfGPlayStore
 
-cat_cols = dfGPlayStore.select_dtypes(include=['object']).columns.tolist()
+cat_cols = features.select_dtypes(include=['object']).columns.tolist() # troquei o sitio que diz features por dfGPlayStore
 cat_cols.append('Released')
 
 for col in num_cols:
-    dfGPlayStore[col] = dfGPlayStore[col].fillna(dfGPlayStore[col].mean())
+    features[col] = dfGPlayStore[col].fillna(dfGPlayStore[col].mean()) # troquei o sitio que diz features por dfGPlayStore
 
 for col in cat_cols:
-    dfGPlayStore[col] = dfGPlayStore[col].fillna(dfGPlayStore[col].mode()[0])
+    features[col] = dfGPlayStore[col].fillna(dfGPlayStore[col].mode()[0]) # troquei o sitio que diz features por dfGPlayStore
 
 print(dfGPlayStore.isna().sum())
 print("-------------------------------------")
@@ -728,8 +737,10 @@ dfGPlayStore[cat_cols] = cat_imputer.fit_transform(dfGPlayStore[cat_cols])
 print(cat_cols)
 '''
 
+
+
 print(dfGPlayStore['Installs'].head())
-# Convert the 'Installs' column to integer
+# Convert the 'Installs' column to float
 dfGPlayStore['Installs'] = dfGPlayStore['Installs'].str.replace(',', '').str.replace('+', '').astype(float)
 
 '''
@@ -759,14 +770,22 @@ dfGPlayStore[cat_cols] = cat_imputer.fit_transform(dfGPlayStore[cat_cols])
 
 # Define target variable
 target = dfGPlayStore['Installs']
-features = dfGPlayStore.drop(columns=['Installs', 'App Name'])
+features = dfGPlayStore[['Rating', 'Rating Count', 'Free', 'Price', 'Ad Supported', 'In App Purchases', 'Editors Choice', 'Size_MB', 'Category']]
+
+# One-hot encode the 'Category' column
+features = pd.get_dummies(features, columns=['Category'])
 
 # Split the data into training and testing sets
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.3, random_state=42) #, random_state=42
+print(X_train.shape, "\n", "--------------------", X_test.shape, "\n", "--------------------", y_train.shape, "\n", "--------------------", y_test.shape)
 
 # Scale/normalize if necessary
 # (If needed, apply scaling or normalization)
+# Standardize the numerical columns
+scaler = StandardScaler()
+X_train[num_cols] = scaler.fit_transform(X_train[num_cols])
+X_test[num_cols] = scaler.transform(X_test[num_cols])
 
 
 # Choose different Machine Learning algorithms suitable for the goal
