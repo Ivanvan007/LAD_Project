@@ -801,6 +801,7 @@ modelos = {
     'Neural Network': MLPRegressor(max_iter=500)
 }
 
+
 print("3. Training each model:")
 model_performance = {}
 
