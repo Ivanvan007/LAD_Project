@@ -5,9 +5,10 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn import svm
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 from sklearn.linear_model import LinearRegression, LogisticRegression, Ridge, Lasso
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVR
@@ -15,7 +16,7 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.neural_network import MLPRegressor
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error, classification_report
 
 file_name = "Google-Playstore.csv"
 file_path = "Data/"
@@ -691,6 +692,7 @@ print("Tools/Software necessary: Python (with scikit-learn for model implementat
 # Preprocess the data
 print("1. Preprocessing the data:")
 
+'''
 print("-------------------------------------")
 print(dfGPlayStore.dtypes)
 print("-------------------------------------")
@@ -707,17 +709,18 @@ for col in dfGPlayStore.columns:
     print(f"{col}: {dfGPlayStore[col].tail()}")
     print("-------------------------------------")
 
+'''
 
 #Drop Nan Values
 dfGPlayStore.dropna(inplace=True)
 
-# Convert the 'Installs' column to long number
+# Convert the 'Installs' column to int number
 dfGPlayStore['Installs'] = dfGPlayStore['Installs'].str.replace(',', '').str.replace('+', '').astype(int)
 
 # Define target variable
 target = dfGPlayStore['Installs']
 features = dfGPlayStore[['Rating', 'Rating Count', 'Free', 'Price', 'Ad Supported', 'In App Purchases', 'Editors Choice',
-                         'Size_MB', 'Category']]
+                         'Size_MB']] #Tirei Category
 
 print(" - Features: ", features)
 
@@ -725,39 +728,84 @@ print(" - Features: ", features)
 num_cols = features.select_dtypes(include=[np.number]).columns.tolist() # troquei o sitio que diz features por dfGPlayStore
 
 cat_cols = features.select_dtypes(include=['object']).columns.tolist() # troquei o sitio que diz features por dfGPlayStore
-cat_cols.append('Released')
+#cat_cols.append('Released')
 
 
-print(" - Head Installs: ", dfGPlayStore['Installs'].head())
+print(" - Head Installs: ", dfGPlayStore['Installs'].head(), "\n ---------------------")
 
 # One-hot encode the 'Category' column
-features = pd.get_dummies(features, columns=['Category'])
+#features = pd.get_dummies(features, columns=['Category'])
 
 # Split the data into training and testing sets
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.3, random_state=42) #, random_state=42
 print(X_train.shape, "\n", "--------------------", X_test.shape, "\n", "--------------------", y_train.shape, "\n", "--------------------", y_test.shape)
 
-# Scale/normalize if necessary
-# (If needed, apply scaling or normalization)
 # Standardize the numerical columns
 scaler = StandardScaler()
 X_train[num_cols] = scaler.fit_transform(X_train[num_cols])
 X_test[num_cols] = scaler.transform(X_test[num_cols])
 
-#Drop Nan Values
-dfGPlayStore.dropna(inplace=True)
+'''
+
+# Cross-Validation and Feature Importance
+model = Lasso()
+cv_scores = cross_val_score(model, X_train, y_train, cv=5, scoring='r2')
+print(f"Cross-Validation R2 Scores: {cv_scores}")
+print(f"Mean Cross-Validation R2 Score: {np.mean(cv_scores)}")
+
+# Fit the model to the training data and evaluate on test data
+model.fit(X_train, y_train)
+predictions = model.predict(X_test)
+mse = mean_squared_error(y_test, predictions)
+r2 = r2_score(y_test, predictions)
+print(f"Test MSE: {mse}")
+print(f"Test R2 Score: {r2}")
+
+# Analyzing feature importance
+feature_importance = pd.Series(model.coef_, index=X_train.columns)
+important_features = feature_importance[feature_importance != 0].sort_values(ascending=False)
+print("Important features:\n", important_features)
+
+# Optional: Remove less important features
+less_important_features = feature_importance[feature_importance == 0].index.tolist()
+X_train_reduced = X_train.drop(columns=less_important_features)
+X_test_reduced = X_test.drop(columns=less_important_features)
+
+# Retrain the model with reduced features
+model.fit(X_train_reduced, y_train)
+predictions_reduced = model.predict(X_test_reduced)
+mse_reduced = mean_squared_error(y_test, predictions_reduced)
+r2_reduced = r2_score(y_test, predictions_reduced)
+print(f"Reduced Test MSE: {mse_reduced}")
+print(f"Reduced Test R2 Score: {r2_reduced}")
+
+# Optional: Hyperparameter Tuning
+param_grid = {'alpha': [0.01, 0.1, 1, 10, 100]}
+grid_search = GridSearchCV(model, param_grid, cv=5, scoring='r2')
+grid_search.fit(X_train, y_train)
+print("Best parameters found: ", grid_search.best_params_)
+best_model = grid_search.best_estimator_
+
+# Evaluate the best model
+best_predictions = best_model.predict(X_test)
+best_mse = mean_squared_error(y_test, best_predictions)
+best_r2 = r2_score(y_test, best_predictions)
+print(f"Best Test MSE: {best_mse}")
+print(f"Best Test R2 Score: {best_r2}")
+
+'''
+
 # Choose different Machine Learning algorithms suitable for the goal
 print("2. Choosing Machine Learning algorithms:")
 
-
 # Initialize the models
 models = {
-    #'Linear Regression': LinearRegression(),
+    'Linear Regression': LinearRegression(),
     #'Ridge Regression': Ridge(),
     'Lasso Regression': Lasso(),
-    #'Support Vector Machine': SVR(),
-    #'K-Nearest Neighbors': KNeighborsRegressor(),
+    #'Support Vector Machine': SVR(), #svm.SVC(kernel='linear')
+    #'K-Nearest Neighbors': KNeighborsRegressor(), #KNeighborsClassifier(n_neighbors=5)
     #'Decision Tree': DecisionTreeRegressor(),
     #'Random Forest': RandomForestRegressor(),
     #'Neural Network': MLPRegressor()
@@ -772,26 +820,44 @@ for name, model in models.items():
 # Create a dictionary to store model performance
 model_performance = {}
 
+
 # Evaluate and compare their performance on the test set using appropriate metrics
 print("4. Evaluating and comparing model performance:")
-
-
-# Logistic Regression - Not suitable for regression problems
-
 
 # Evaluate and compare their performance on the test set using appropriate metrics
 for name, model in models.items():
     predictions = model.predict(X_test)
-    mse = mean_squared_error(y_test, predictions)
+    rmse = (np.sqrt(mean_squared_error(y_test, predictions)))
     r2 = r2_score(y_test, predictions)
-    model_performance[name] = {'MSE': mse, 'R2 Score': r2}
+    #cross = cross_val_score(model, X_train, y_train, cv=5)
+    model_performance[name] = {'RMSE': rmse, 'R2 Score': r2} #, 'Cross Value Score': cross
 
 # Display model performance
 for model, metrics in model_performance.items():
-    print(f"{model} - MSE: {metrics['MSE']}, R2 Score: {metrics['R2 Score']}")
+    print(f"{model} - RMSE: {metrics['RMSE']}, R2 Score: {metrics['R2 Score']}") #, Cross Value Score: {metrics['Cross Value Score']}
 
 
 '''
+    #Usar dentro do ciclo for # Evaluate and compare their performance on the test set using appropriate metrics
+    if name == 'Linear Regression':
+        rmse = (np.sqrt(mean_squared_error(y_test, predictions))) #antes estava sem o np.sqrt, e nao estava a fazer rmse, estava apenas a fazer mse
+        r2 = r2_score(y_test, predictions)
+        model_performance[name] = {'RMSE': rmse, 'R2 Score': r2}
+    elif name == 'Ridge Regression' or name == 'Lasso Regression':
+        mae = mean_absolute_error(y_test, predictions)
+        r2 = r2_score(y_test, predictions)
+        model_performance[name] = {'MAE': mae, 'R2 Score': r2}
+    elif name == 'Support Vector Machine':
+        classification_reportSvm = classification_report(y_test, predictions)
+        model_performance[name] = {'Classification Report SVM': classification_report}
+    elif name == 'K-Nearest Neighbors':
+        classification_reportKNeighbours = classification_report(y_test, predictions)
+        model_performance[name] = {'Classification Report K-Nearest Neighbours': classification_report}
+    elif name == 'Decision Tree':
+
+
+
+
 for col in num_cols:
     features[col] = dfGPlayStore[col].fillna(dfGPlayStore[col].mean()) # troquei o sitio que diz features por dfGPlayStore
 
