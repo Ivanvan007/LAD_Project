@@ -1,6 +1,5 @@
 import os
 
-import matplotlib
 import pandas as pd
 import time
 import numpy as np
@@ -28,6 +27,7 @@ full_path = os.path.join(file_path, file_name)
 dfGPlayStore = pd.read_csv(full_path,nrows=180000)
 #CSV File Reading Finished
 
+
 print("---------------Tarefa 1: Descrição do Dataset--------------")
 print("Descrição da tarefa: Fazer uma descrição das características do dataset (e.g., domínio, tamanho, tipos de dados, entidades, etc.")
 #Domain
@@ -51,6 +51,8 @@ dataSetDescription = dfGPlayStore.describe()
 print(dataSetDescription)
 #Variance (só vai dar para calcular a variância das colunas numéricas - colunas do tipo object não têm variância)
 '''
+
+
 Rating
 Rating Count
 Minimum Installs
@@ -58,7 +60,9 @@ Maximum Installs
 Price
 
 - Estas são as únicas colunas numéricas do dataset e, portanto, as únicas
-para as quais dá para calcular a variância, covariância e os coeficientes de correlação.   
+para as quais dá para calcular a variância, covariância e os coeficientes de correlação. 
+
+
 '''
 print("Variância:")
 print(dataSetDescription.var())
@@ -668,6 +672,8 @@ plt.savefig('Graficos/ProportionOfFreeAppsPerCategory.png')
 print("------------------Tarefa 4: Análise Crítica------------------")
 print("Nesta secção, os dados e gráficos produzidos nas tarefas anteriores serão analisados criticamente.")
 
+
+
 print("-------------------------------------------------------------")
 print("-------------------- PARTE 2 --------------------------------")
 print("-------------------------------------------------------------")
@@ -702,18 +708,90 @@ for col in dfGPlayStore.columns:
     print("-------------------------------------")
 
 
+#Drop Nan Values
+dfGPlayStore.dropna(inplace=True)
+
+# Convert the 'Installs' column to long number
+dfGPlayStore['Installs'] = dfGPlayStore['Installs'].str.replace(',', '').str.replace('+', '').astype(int)
+
 # Define target variable
 target = dfGPlayStore['Installs']
-features = dfGPlayStore[['Rating', 'Rating Count', 'Free', 'Price', 'Ad Supported', 'In App Purchases', 'Editors Choice', 'Size_MB', 'Category']]
+features = dfGPlayStore[['Rating', 'Rating Count', 'Free', 'Price', 'Ad Supported', 'In App Purchases', 'Editors Choice',
+                         'Size_MB', 'Category']]
 
-# Handle NaN values
+print(" - Features: ", features)
 
-# Fill NaN values with a specific value
+# Define indexis of numerical columns and categorical columns
 num_cols = features.select_dtypes(include=[np.number]).columns.tolist() # troquei o sitio que diz features por dfGPlayStore
 
 cat_cols = features.select_dtypes(include=['object']).columns.tolist() # troquei o sitio que diz features por dfGPlayStore
 cat_cols.append('Released')
 
+
+print(" - Head Installs: ", dfGPlayStore['Installs'].head())
+
+# One-hot encode the 'Category' column
+features = pd.get_dummies(features, columns=['Category'])
+
+# Split the data into training and testing sets
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.3, random_state=42) #, random_state=42
+print(X_train.shape, "\n", "--------------------", X_test.shape, "\n", "--------------------", y_train.shape, "\n", "--------------------", y_test.shape)
+
+# Scale/normalize if necessary
+# (If needed, apply scaling or normalization)
+# Standardize the numerical columns
+scaler = StandardScaler()
+X_train[num_cols] = scaler.fit_transform(X_train[num_cols])
+X_test[num_cols] = scaler.transform(X_test[num_cols])
+
+#Drop Nan Values
+dfGPlayStore.dropna(inplace=True)
+# Choose different Machine Learning algorithms suitable for the goal
+print("2. Choosing Machine Learning algorithms:")
+
+
+# Initialize the models
+models = {
+    #'Linear Regression': LinearRegression(),
+    #'Ridge Regression': Ridge(),
+    'Lasso Regression': Lasso(),
+    #'Support Vector Machine': SVR(),
+    #'K-Nearest Neighbors': KNeighborsRegressor(),
+    #'Decision Tree': DecisionTreeRegressor(),
+    #'Random Forest': RandomForestRegressor(),
+    #'Neural Network': MLPRegressor()
+}
+
+# Train each model on the training set
+print("3. Training each model:")
+for name, model in models.items():
+    model.fit(X_train, y_train)
+    print(f"{name} model has been trained.")
+
+# Create a dictionary to store model performance
+model_performance = {}
+
+# Evaluate and compare their performance on the test set using appropriate metrics
+print("4. Evaluating and comparing model performance:")
+
+
+# Logistic Regression - Not suitable for regression problems
+
+
+# Evaluate and compare their performance on the test set using appropriate metrics
+for name, model in models.items():
+    predictions = model.predict(X_test)
+    mse = mean_squared_error(y_test, predictions)
+    r2 = r2_score(y_test, predictions)
+    model_performance[name] = {'MSE': mse, 'R2 Score': r2}
+
+# Display model performance
+for model, metrics in model_performance.items():
+    print(f"{model} - MSE: {metrics['MSE']}, R2 Score: {metrics['R2 Score']}")
+
+
+'''
 for col in num_cols:
     features[col] = dfGPlayStore[col].fillna(dfGPlayStore[col].mean()) # troquei o sitio que diz features por dfGPlayStore
 
@@ -725,7 +803,7 @@ print("-------------------------------------")
 print(dfGPlayStore.dtypes)
 print("-------------------------------------")
 
-'''
+
 # For numerical columns
 num_imputer = SimpleImputer(strategy='mean')
 dfGPlayStore[num_cols] = num_imputer.fit_transform(dfGPlayStore[num_cols])
@@ -735,15 +813,7 @@ print(num_cols)
 cat_imputer = SimpleImputer(strategy='most_frequent')
 dfGPlayStore[cat_cols] = cat_imputer.fit_transform(dfGPlayStore[cat_cols])
 print(cat_cols)
-'''
 
-
-
-print(dfGPlayStore['Installs'].head())
-# Convert the 'Installs' column to float
-dfGPlayStore['Installs'] = dfGPlayStore['Installs'].str.replace(',', '').str.replace('+', '').astype(float)
-
-'''
 # Convert all categorical columns to 'object' data type
 dfGPlayStore[cat_cols] = dfGPlayStore[cat_cols].astype('object')
 
@@ -765,28 +835,6 @@ dfGPlayStore[num_cols] = num_imputer.fit_transform(dfGPlayStore[num_cols])
 # For categorical columns
 cat_imputer = SimpleImputer(strategy='most_frequent')
 dfGPlayStore[cat_cols] = cat_imputer.fit_transform(dfGPlayStore[cat_cols])
-'''
-
-
-# Define target variable
-target = dfGPlayStore['Installs']
-features = dfGPlayStore[['Rating', 'Rating Count', 'Free', 'Price', 'Ad Supported', 'In App Purchases', 'Editors Choice', 'Size_MB', 'Category']]
-
-# One-hot encode the 'Category' column
-features = pd.get_dummies(features, columns=['Category'])
-
-# Split the data into training and testing sets
-from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.3, random_state=42) #, random_state=42
-print(X_train.shape, "\n", "--------------------", X_test.shape, "\n", "--------------------", y_train.shape, "\n", "--------------------", y_test.shape)
-
-# Scale/normalize if necessary
-# (If needed, apply scaling or normalization)
-# Standardize the numerical columns
-scaler = StandardScaler()
-X_train[num_cols] = scaler.fit_transform(X_train[num_cols])
-X_test[num_cols] = scaler.transform(X_test[num_cols])
-
 
 # Choose different Machine Learning algorithms suitable for the goal
 print("2. Choosing Machine Learning algorithms:")
@@ -823,48 +871,11 @@ for nome, modelo in modelos.items():
     r2 = r2_score(y_test, predictions)
     print(f"{nome}: {r2}")
 
-
-'''
-
-# Choose different Machine Learning algorithms suitable for the goal
-print("2. Choosing Machine Learning algorithms:")
-
-
-# Initialize the models
-linear_reg = LinearRegression()
-ridge_reg = Ridge()
-lasso_reg = Lasso()
-svm = SVR()
-knn = KNeighborsRegressor()
-decision_tree = DecisionTreeRegressor()
-random_forest = RandomForestRegressor()
-neural_network = MLPRegressor()
-
-# Train each model on the training set
-print("3. Training each model:")
-linear_reg.fit(X_train, y_train)
-ridge_reg.fit(X_train, y_train)
-lasso_reg.fit(X_train, y_train)
-svm.fit(X_train, y_train)
-knn.fit(X_train, y_train)
-decision_tree.fit(X_train, y_train)
-random_forest.fit(X_train, y_train)
-neural_network.fit(X_train, y_train)
-
-# Evaluate and compare their performance on the test set using appropriate metrics
-print("4. Evaluating and comparing model performance:")
-
-
-# Create a dictionary to store model performance
-model_performance = {}
-
 # Linear Regression
 #linear_reg_score = linear_reg.score(X_test, y_test)
 linear_reg_pred = linear_reg.predict(X_test)
 linear_reg_mse = (np.sqrt(mean_squared_error(y_test, linear_reg_pred)))
 model_performance['Linear Regression'] = linear_reg_mse
-
-# Logistic Regression - Not suitable for regression problems
 
 # Ridge and Lasso Regression
 ridge_reg_pred = ridge_reg.predict(X_test)
@@ -907,5 +918,14 @@ print("Model Performance (Mean Squared Error):")
 for model, mse in model_performance.items():
     print(f"{model}: {mse}")
 
+#Fazer RSE ou Score ou MAE para ver se está correto
+print("\nModel Performance (R2 Score):")
+for nome, modelo in model_performance.items():
+    predictions = modelo.predict(X_test)
+    r2 = r2_score(y_test, predictions)
+    print(f"{nome}: {r2}")
+
+
 # Additional analysis for specific models (e.g., Decision Trees, Random Forest) can be performed here
+
 '''
