@@ -720,7 +720,7 @@ dfGPlayStore['Installs'] = dfGPlayStore['Installs'].str.replace(',', '').str.rep
 # Define target variable
 target = dfGPlayStore['Installs']
 features = dfGPlayStore[['Rating', 'Rating Count', 'Free', 'Price', 'Ad Supported', 'In App Purchases', 'Editors Choice',
-                         'Size_MB']] #Tirei Category
+                         'Size_MB']]
 
 print(" - Features: ", features)
 
@@ -741,12 +741,61 @@ from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.3, random_state=42) #, random_state=42
 print(X_train.shape, "\n", "--------------------", X_test.shape, "\n", "--------------------", y_train.shape, "\n", "--------------------", y_test.shape)
 
+'''
 # Standardize the numerical columns
 scaler = StandardScaler()
 X_train[num_cols] = scaler.fit_transform(X_train[num_cols])
 X_test[num_cols] = scaler.transform(X_test[num_cols])
+'''
+
+
+# Choose different Machine Learning algorithms suitable for the goal
+print("2. Choosing Machine Learning algorithms:")
+
+# Initialize the models
+models = {
+    'Linear Regression': LinearRegression(),
+    #'Ridge Regression': Ridge(),
+    'Lasso Regression': Lasso(),
+    #'Support Vector Machine': SVR(), #svm.SVC(kernel='linear')
+    #'K-Nearest Neighbors': KNeighborsRegressor(), #KNeighborsClassifier(n_neighbors=5)
+    #'Decision Tree': DecisionTreeRegressor(),
+    #'Random Forest': RandomForestRegressor(),
+    #'Neural Network': MLPRegressor()
+}
+
+# Train each model on the training set
+print("3. Training each model:")
+for name, model in models.items():
+    model.fit(X_train, y_train)
+    print(f"{name} model has been trained.")
+
+# Create a dictionary to store model performance
+model_performance = {}
+
+
+# Evaluate and compare their performance on the test set using appropriate metrics
+print("4. Evaluating and comparing model performance:")
+
+# Evaluate and compare their performance on the test set using appropriate metrics
+for name, model in models.items():
+    predictions = model.predict(X_test)
+    rmse = (np.sqrt(mean_squared_error(y_test, predictions)))
+    r2 = r2_score(y_test, predictions)
+    #cross = cross_val_score(model, X_train, y_train, cv=5)
+    model_performance[name] = {'RMSE': rmse, 'R2 Score': r2} #, 'Cross Value Score': cross
+
+# Display model performance
+for model, metrics in model_performance.items():
+    print(f"{model} - RMSE: {metrics['RMSE']}, R2 Score: {metrics['R2 Score']}") #, Cross Value Score: {metrics['Cross Value Score']}
+
+
+
 
 '''
+
+
+
 
 # Cross-Validation and Feature Importance
 model = Lasso()
@@ -794,50 +843,10 @@ best_r2 = r2_score(y_test, best_predictions)
 print(f"Best Test MSE: {best_mse}")
 print(f"Best Test R2 Score: {best_r2}")
 
-'''
-
-# Choose different Machine Learning algorithms suitable for the goal
-print("2. Choosing Machine Learning algorithms:")
-
-# Initialize the models
-models = {
-    'Linear Regression': LinearRegression(),
-    #'Ridge Regression': Ridge(),
-    'Lasso Regression': Lasso(),
-    #'Support Vector Machine': SVR(), #svm.SVC(kernel='linear')
-    #'K-Nearest Neighbors': KNeighborsRegressor(), #KNeighborsClassifier(n_neighbors=5)
-    #'Decision Tree': DecisionTreeRegressor(),
-    #'Random Forest': RandomForestRegressor(),
-    #'Neural Network': MLPRegressor()
-}
-
-# Train each model on the training set
-print("3. Training each model:")
-for name, model in models.items():
-    model.fit(X_train, y_train)
-    print(f"{name} model has been trained.")
-
-# Create a dictionary to store model performance
-model_performance = {}
 
 
-# Evaluate and compare their performance on the test set using appropriate metrics
-print("4. Evaluating and comparing model performance:")
-
-# Evaluate and compare their performance on the test set using appropriate metrics
-for name, model in models.items():
-    predictions = model.predict(X_test)
-    rmse = (np.sqrt(mean_squared_error(y_test, predictions)))
-    r2 = r2_score(y_test, predictions)
-    #cross = cross_val_score(model, X_train, y_train, cv=5)
-    model_performance[name] = {'RMSE': rmse, 'R2 Score': r2} #, 'Cross Value Score': cross
-
-# Display model performance
-for model, metrics in model_performance.items():
-    print(f"{model} - RMSE: {metrics['RMSE']}, R2 Score: {metrics['R2 Score']}") #, Cross Value Score: {metrics['Cross Value Score']}
 
 
-'''
     #Usar dentro do ciclo for # Evaluate and compare their performance on the test set using appropriate metrics
     if name == 'Linear Regression':
         rmse = (np.sqrt(mean_squared_error(y_test, predictions))) #antes estava sem o np.sqrt, e nao estava a fazer rmse, estava apenas a fazer mse
