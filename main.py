@@ -10,7 +10,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 from sklearn.linear_model import LinearRegression, LogisticRegression, Ridge, Lasso
-from sklearn.cluster._kmeans import k_means
+from sklearn.cluster import KMeans
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVR
 from sklearn.neighbors import KNeighborsRegressor, KNeighborsClassifier
@@ -26,7 +26,7 @@ full_path = os.path.join(file_path, file_name)
 
 #Start CSV File Reading
 #Ler-se-ão apenas as primeiras 180000 linhas do arquivo
-dfGPlayStore = pd.read_csv(full_path,nrows=290000)
+dfGPlayStore = pd.read_csv(full_path,nrows=500000)
 #dfGPlayStore = pd.read_csv(full_path) #dfGPlayStore = dfGPlayStore.dropna()
 #CSV File Reading Finished
 
@@ -759,10 +759,11 @@ models = {
     'Linear Regression': LinearRegression(),
     'Ridge Regression': Ridge(),
     'Lasso Regression': Lasso(),
+    'Logistic Regression': LogisticRegression(),
     #'Support Vector Machine': SVR(),
     #'':svm.SVC(kernel='linear')
-    #'K-Nearest Neighbors(regressor)': KNeighborsRegressor(),
     'K-Nearest Neighbors(classifier)': KNeighborsClassifier(n_neighbors=5),
+    'k_Means': KMeans(n_clusters=4)
     #'Decision Tree': DecisionTreeRegressor(),
     #'Random Forest': RandomForestRegressor(),
     #'Neural Network': MLPRegressor()
