@@ -1,23 +1,16 @@
 import os
-
-import pandas as pd
-import time
-import numpy as np
-import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn import svm
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
-from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LinearRegression, LogisticRegression, Ridge, Lasso
-from sklearn.cluster import KMeans
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error, accuracy_score, classification_report
+import matplotlib.pyplot as plt
 from sklearn.naive_bayes import GaussianNB
-from sklearn.svm import SVR
-from sklearn.neighbors import KNeighborsRegressor, KNeighborsClassifier
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.neural_network import MLPRegressor
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error, classification_report
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier, plot_tree
 
 file_name = "Google-Playstore.csv"
 file_path = "Data/"
@@ -689,29 +682,29 @@ print("-------------------------------------")
 
 print("---------------Task 6: Machine Learning Models Application and Comparison--------------")
 print("Brief description of the task: Apply and compare different Machine Learning models.")
-print("Tools/Software necessary: Python (with scikit-learn for model implementation, excluding auto-sklearn as project restriction).")
+'''print("Tools/Software necessary: Python (with scikit-learn for model implementation, excluding auto-sklearn as project restriction).")
 
 # Preprocess the data
 print("1. Preprocessing the data:")
 
 '''
-print("-------------------------------------")
-print(dfGPlayStore.dtypes)
-print("-------------------------------------")
+#print("-------------------------------------")
+#print(dfGPlayStore.dtypes)
+#print("-------------------------------------")
 
 # Print the head and tails of each column
-print("Head and Tails of each column:")
-print("-------------------------------------")
+#print("Head and Tails of each column:")
+#print("-------------------------------------")
 
-for col in dfGPlayStore.columns:
-    print("Head")
-    print(f"{col}: {dfGPlayStore[col].head()}")
-    print("-------------------------------------")
-    print("Tail")
-    print(f"{col}: {dfGPlayStore[col].tail()}")
-    print("-------------------------------------")
+#for col in dfGPlayStore.columns:
+#   print("Head")
+#   print(f"{col}: {dfGPlayStore[col].head()}")
+#   print("-------------------------------------")
+#   print("Tail")
+#   print(f"{col}: {dfGPlayStore[col].tail()}")
+#   print("-------------------------------------")
 
-'''
+
 
 #Drop Nan Values
 dfGPlayStore.dropna(inplace=True)
@@ -754,11 +747,94 @@ X_test[num_cols] = scaler.transform(X_test[num_cols])
 # Choose different Machine Learning algorithms suitable for the goal
 print("2. Choosing Machine Learning algorithms:")
 
-# Initialize the models
+
+
+# Dicionário para armazenar resultados
+results = {}
+
+# Função para calcular e armazenar métricas
+def evaluate_model(name, model, X_train, y_train, X_test, y_test, regression=False):
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    if regression:
+        r2 = r2_score(y_test, y_pred)
+        mae = mean_absolute_error(y_test, y_pred)
+        mse = mean_squared_error(y_test, y_pred)
+        rmse = np.sqrt(mse)
+        results[name] = {'R^2': r2, 'MAE': mae, 'MSE': mse, 'RMSE': rmse}
+    else:
+        acc = accuracy_score(y_test, y_pred)
+        report = classification_report(y_test, y_pred)
+        results[name] = {'Accuracy': acc, 'Report': report}
+
+# Regressão Linear
+evaluate_model('Linear Regression', LinearRegression(), X_train, y_train, X_test, y_test, regression=True)
+
+# Regressão Logística
+evaluate_model('Logistic Regression', LogisticRegression(max_iter=1000), X_train, y_train, X_test, y_test)
+
+# Ridge Regression
+evaluate_model('Ridge Regression', Ridge(alpha=1.0), X_train, y_train, X_test, y_test, regression=True)
+
+# Lasso Regression
+evaluate_model('Lasso Regression', Lasso(alpha=1.0), X_train, y_train, X_test, y_test, regression=True)
+
+# Naive Bayes
+evaluate_model('Naive Bayes', GaussianNB(), X_train, y_train, X_test, y_test)
+
+# SVM com kernel linear
+evaluate_model('SVM (linear kernel)', SVC(kernel='linear'), X_train, y_train, X_test, y_test)
+
+# SVM com kernel RBF
+evaluate_model('SVM (RBF kernel)', SVC(kernel='rbf'), X_train, y_train, X_test, y_test)
+
+# K-NN com k=5
+evaluate_model('K-NN', KNeighborsClassifier(n_neighbors=5), X_train, y_train, X_test, y_test)
+
+# Decision Tree
+dt_model = DecisionTreeClassifier()
+evaluate_model('Decision Tree', dt_model, X_train, y_train, X_test, y_test)
+
+# Visualizar a árvore de decisão
+plt.figure(figsize=(20,10))
+plot_tree(dt_model, filled=True, feature_names=X.columns, class_names=True)
+plt.title('Decision Tree')
+plt.show()
+
+# Random Forest
+rf_model = RandomForestClassifier()
+evaluate_model('Random Forest', rf_model, X_train, y_train, X_test, y_test)
+
+# Visualizar uma árvore do Random Forest
+plt.figure(figsize=(20,10))
+plot_tree(rf_model.estimators_[0], filled=True, feature_names=X.columns, class_names=True)
+plt.title('Random Forest - One Tree')
+plt.show()
+
+# Neural Networks - Single Layer
+evaluate_model('Neural Network (single layer)', MLPClassifier(hidden_layer_sizes=(10,), max_iter=1000), X_train, y_train, X_test, y_test)
+
+# Neural Networks - Multi Layer
+evaluate_model('Neural Network (multi layer)', MLPClassifier(hidden_layer_sizes=(100,50,), max_iter=1000), X_train, y_train, X_test, y_test)
+
+# Exibir resultados
+for model, metrics in results.items():
+    print(f"Model: {model}")
+    for metric, value in metrics.items():
+        if isinstance(value, str):
+            print(f"{metric}:\n{value}")
+        else:
+            print(f"{metric}: {value:.4f}")
+    print("\n")
+
+
+
+
+'''# Initialize the models
 models = {
     'Linear Regression': LinearRegression(),
-    'Ridge Regression': Ridge(),
-    'Lasso Regression': Lasso(),
+    #'Ridge Regression': Ridge(),
+    #'Lasso Regression': Lasso(),
     'Logistic Regression': LogisticRegression(),
     #'Support Vector Machine': SVR(),
     #'':svm.SVC(kernel='linear')
@@ -794,7 +870,7 @@ for name, model in models.items():
 for model, metrics in model_performance.items():
     print(f"{model} - RMSE: {metrics['RMSE']}, R2 Score: {metrics['R2 Score']}") #, Cross Value Score: {metrics['Cross Value Score']}
 
-
+'''
 
 
 '''
