@@ -25,8 +25,8 @@ full_path = os.path.join(file_path, file_name)
 #full_path = "Data/Google-Playstore.csv"
 
 #Start CSV File Reading
-#Ler-se-ão apenas as primeiras 180000 linhas do arquivo
-dfGPlayStore = pd.read_csv(full_path,nrows=500000)
+#Ler-se-ão apenas as primeiras 30000 linhas do arquivo
+dfGPlayStore = pd.read_csv(full_path,nrows=5000)
 #dfGPlayStore = pd.read_csv(full_path) #descomentar para usar o dataset enteiro. comentar a linha de cima #dfGPlayStore = dfGPlayStore.dropna()
 #CSV File Reading Finished
 
@@ -67,6 +67,15 @@ para as quais dá para calcular a variância, covariância e os coeficientes de 
 
 
 '''
+
+def predict_new_app(pipeline, new_app):
+    # Preprocessar a nova app
+    new_app_transformed = pipeline.named_steps['preprocessor'].transform(new_app)
+    # Prever a variável alvo
+    prediction = pipeline.named_steps['model'].predict(new_app_transformed)
+    return prediction
+
+
 print("Variância:")
 print(dataSetDescription.var())
 #Covariance
@@ -740,7 +749,7 @@ print(" - Head Installs: ", dfGPlayStore['Installs'].head(), "\n ---------------
 
 # Split the data into training and testing sets
 from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.3, random_state=42) #, random_state=42
+X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, random_state=42) #, random_state=42
 print(X_train.shape, "\n", "--------------------", X_test.shape, "\n", "--------------------", y_train.shape, "\n", "--------------------", y_test.shape)
 
 '''
@@ -757,16 +766,16 @@ print("2. Choosing Machine Learning algorithms:")
 # Initialize the models
 models = {
     'Linear Regression': LinearRegression(),
-    'Ridge Regression': Ridge(),
-    'Lasso Regression': Lasso(),
+    'Ridge Regression': Ridge(alpha=1.0),
+    'Lasso Regression': Lasso(alpha=1.0),
     'Logistic Regression': LogisticRegression(),
-    #'Support Vector Machine': SVR(),
-    #'':svm.SVC(kernel='linear')
+    'K-Nearest Neighbors(regressor)': KNeighborsRegressor(n_neighbors=5),
     'K-Nearest Neighbors(classifier)': KNeighborsClassifier(n_neighbors=5),
-    'k_Means': KMeans(n_clusters=4)
-    #'Decision Tree': DecisionTreeRegressor(),
-    #'Random Forest': RandomForestRegressor(),
-    #'Neural Network': MLPRegressor()
+    'k_Means': KMeans(n_clusters=4),
+    'Decision Tree': DecisionTreeRegressor(),
+    'Random Forest': RandomForestRegressor(),
+    'Neural Network(single layer)': MLPRegressor(hidden_layer_sizes=(10,), max_iter=1000),
+    'Neural Network(multi layer)': MLPRegressor(hidden_layer_sizes=(100, 50), max_iter=1000)
 }
 
 # Train each model on the training set
@@ -779,20 +788,53 @@ for name, model in models.items():
 model_performance = {}
 
 
+
 # Evaluate and compare their performance on the test set using appropriate metrics
 print("4. Evaluating and comparing model performance:")
 
 # Evaluate and compare their performance on the test set using appropriate metrics
 for name, model in models.items():
     predictions = model.predict(X_test)
-    rmse = (np.sqrt(mean_squared_error(y_test, predictions)))
+
     r2 = r2_score(y_test, predictions)
+    #y_pred = pipeline.predict(X_test)
+    mae = mean_absolute_error(y_test, predictions)
+    mse = mean_squared_error(y_test, predictions)
+    rmse = np.sqrt(mse)
     #cross = cross_val_score(model, X_train, y_train, cv=5)
-    model_performance[name] = {'RMSE': rmse, 'R2 Score': r2} #, 'Cross Value Score': cross
+    model_performance[name] = {'MSE': mse, 'R2 Score': r2, 'MAE': mae, 'RMSE': rmse} #, 'Cross Value Score': cross
 
 # Display model performance
 for model, metrics in model_performance.items():
-    print(f"{model} - RMSE: {metrics['RMSE']}, R2 Score: {metrics['R2 Score']}") #, Cross Value Score: {metrics['Cross Value Score']}
+    print(f"{model} - MSE: {metrics['MSE']}, R2 Score: {metrics['R2 Score']},"
+          f"MAE: {metrics['MAE']},RMSE: {metrics['RMSE']}\n\n") #, Cross Value Score: {metrics['Cross Value Score']}
+
+#SVR(kernel='linear').fit(X_train, y_train)
+
+#print("SVR(linear) has been trained\n")
+#predictions = SVR(kernel='linear').predict(X_test)
+#r2 = r2_score(y_test, predictions)
+#y_pred = pipeline.predict(X_test)
+#mae = mean_absolute_error(y_test, predictions)
+#mse = mean_squared_error(y_test, predictions)
+#rmse = np.sqrt(mse)
+
+#print(f"SVR(linear) - MSE: {metrics['MSE']}, \nR2 Score: {metrics['R2 Score']}, \nMAE: {metrics['MAE']}, \nRMSE: {metrics['RMSE']}")
+
+#SVR(kernel='linear').fit(X_train, y_train)
+
+#print("SVR(rbf) has been trained\n")
+#predictions = SVR(kernel='rbf').predict(X_test)
+#r2 = r2_score(y_test, predictions)
+#y_pred = pipeline.predict(X_test)
+#mae = mean_absolute_error(y_test, predictions)
+#mse = mean_squared_error(y_test, predictions)
+#rmse = np.sqrt(mse)
+
+#print(f"SVR(rbf) - MSE: {metrics['MSE']}, \nR2 Score: {metrics['R2 Score']}, \nMAE: {metrics['MAE']}, \nRMSE: {metrics['RMSE']}")
+
+
+
 
 
 
