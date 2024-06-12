@@ -4,8 +4,7 @@ from tkinter import messagebox, ttk
 import numpy as np
 import pandas as pd
 import joblib
-import numpy as np
-from sklearn.model_selection import train_test_split
+'''from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, Ridge, Lasso, LogisticRegression
 from sklearn.cluster import KMeans
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
@@ -21,13 +20,13 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import graphviz
-from IPython.display import Image
+from IPython.display import Image'''
 
 # Load the trained model
-try:
-    model = joblib.load('RandomForest.pkl')
-except FileNotFoundError:
-    raise Exception("Model file not found. Ensure 'RandomForest.pkl' is in the correct directory.")
+#try:
+ #   model = joblib.load('RandomForest.pkl')
+#except FileNotFoundError:
+ #   raise Exception("Model file not found. Ensure 'RandomForest.pkl' is in the correct directory.")
 
 # Mappings for LabelEncoders used during training
 category_mapping = {'Action': 0, 'Adventure': 1, 'Arcade': 2, 'Art & Design': 3,
@@ -45,29 +44,6 @@ category_mapping = {'Action': 0, 'Adventure': 1, 'Arcade': 2, 'Art & Design': 3,
                     'Weather': 46, 'Word': 47}
 
 content_mapping = {'Everyone': 0, 'Everyone 10+': 1, 'Mature 17+': 2, 'Teen': 3}
-
-# Function to convert size to MB
-def size_to_mb(size):
-    try:
-        if 'M' in size:
-            return float(size.replace('M', ''))
-        elif 'K' in size:
-            return float(size.replace('K', '')) / 1024
-        elif 'G' in size:
-            return float(size.replace('G', '')) * 1024
-    except ValueError:
-        return np.nan
-    return size
-
-# Function to preprocess new app data
-def preprocess_new_app(new_app):
-    new_app_df = pd.DataFrame([new_app],
-                              columns=['Category', 'Rating', 'Rating Count', 'Free', 'Price', 'Size', 'Minimum Android',
-                                       'Content Rating', 'Ad Supported', 'In App Purchases', 'Editors Choice'])
-    new_app_df['Size'] = new_app_df['Size'].apply(size_to_mb)
-    new_app_df['Category'] = new_app_df['Category'].apply(lambda x: category_mapping.get(x, -1))
-    new_app_df['Content Rating'] = new_app_df['Content Rating'].apply(lambda x: content_mapping.get(x, -1))
-    return new_app_df
 
 # Function to submit data and make prediction
 def submit():
