@@ -3,18 +3,33 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 import numpy as np
 import pandas as pd
-import pickle
-import sklearn
+import joblib
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression, Ridge, Lasso, LogisticRegression
+from sklearn.cluster import KMeans
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
+from sklearn.preprocessing import StandardScaler, OneHotEncoder, LabelEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.svm import SVR
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.tree import DecisionTreeRegressor, plot_tree, export_graphviz
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.neural_network import MLPRegressor
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+import graphviz
+from IPython.display import Image
 
+# Load the trained model
+try:
+    model = joblib.load('RandomForest.pkl')
+except FileNotFoundError:
+    raise Exception("Model file not found. Ensure 'RandomForest.pkl' is in the correct directory.")
 
-
-# Carregar o modelo treinado (substitua 'models['Linear Regression']' pelo modelo desejado)
-#import joblib
-
-with open('knn.pkl', 'rb') as f:
-    model = pickle.load(f)
-
-# Mapeamentos de LabelEncoders usados durante o treinamento
+# Mappings for LabelEncoders used during training
 category_mapping = {'Action': 0, 'Adventure': 1, 'Arcade': 2, 'Art & Design': 3,
                     'Auto & Vehicles': 4, 'Beauty': 5, 'Board': 6, 'Books & Reference': 7,
                     'Business': 8, 'Card': 9, 'Casino': 10, 'Casual': 11, 'Comics': 12,
@@ -29,10 +44,9 @@ category_mapping = {'Action': 0, 'Adventure': 1, 'Arcade': 2, 'Art & Design': 3,
                     'Travel & Local': 43, 'Trivia': 44, 'Video Players & Editors': 45,
                     'Weather': 46, 'Word': 47}
 
-content_mapping = {'Everyone': 0, 'Everyone 10+': 1, 'Mature 17+': 2, 'Teen': 3}  # Atualize com seu mapeamento real
+content_mapping = {'Everyone': 0, 'Everyone 10+': 1, 'Mature 17+': 2, 'Teen': 3}
 
-
-# Função para converter o tamanho para MB
+# Function to convert size to MB
 def size_to_mb(size):
     try:
         if 'M' in size:
@@ -45,8 +59,7 @@ def size_to_mb(size):
         return np.nan
     return size
 
-
-# Função para processar a nova entrada
+# Function to preprocess new app data
 def preprocess_new_app(new_app):
     new_app_df = pd.DataFrame([new_app],
                               columns=['Category', 'Rating', 'Rating Count', 'Free', 'Price', 'Size', 'Minimum Android',
@@ -56,8 +69,7 @@ def preprocess_new_app(new_app):
     new_app_df['Content Rating'] = new_app_df['Content Rating'].apply(lambda x: content_mapping.get(x, -1))
     return new_app_df
 
-
-# Função para submeter os dados e fazer a previsão
+# Function to submit data and make prediction
 def submit():
     try:
         category = entry_category.get()
@@ -76,7 +88,7 @@ def submit():
                         in_app_purchases, editors_choice]
         new_app_processed = preprocess_new_app(new_app_data)
 
-        # Fazer a previsão com o modelo treinado
+        # Make prediction with the trained model
         prediction = model.predict(new_app_processed)
         installs_prediction = prediction[0]
 
@@ -84,15 +96,12 @@ def submit():
     except ValueError as e:
         messagebox.showerror("Input Error", f"Please enter valid data for all fields. {str(e)}")
 
-
-# Criar a janela principal
+# Create main window
 root = tk.Tk()
 root.title("Data Entry Form")
 root.geometry("640x480")
-root.minsize(288, 162)
-root.maxsize(1152, 818)
 
-# Criar labels e entry fields
+# Create labels and entry fields
 fields = ['Category', 'Rating', 'Rating Count', 'Price', 'Size_MB', 'Minimum Android']
 entries = {}
 
@@ -112,7 +121,7 @@ entry_price = entries['Price']
 entry_size_mb = entries['Size_MB']
 entry_min_android = entries['Minimum Android']
 
-# Criar checkbuttons para campos booleanos
+# Create checkbuttons for boolean fields
 boolean_fields = ['Free', 'Ad Supported', 'In App Purchases', 'Editors Choice']
 variables = {}
 
@@ -127,18 +136,18 @@ var_ad_supported = variables['Ad Supported']
 var_in_app_purchases = variables['In App Purchases']
 var_editors_choice = variables['Editors Choice']
 
-# Criar menu dropdown para Content Rating
+# Create dropdown menu for content rating
 content_rating_var = tk.StringVar()
 content_rating_label = tk.Label(root, text="Content Rating", width=20, anchor='w')
 content_rating_label.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
 content_rating_menu = ttk.Combobox(root, textvariable=content_rating_var)
 content_rating_menu['values'] = list(content_mapping.keys())
 content_rating_menu.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
-content_rating_menu.current(0)  # Definir valor padrão
+content_rating_menu.current(0)
 
-# Criar botão de submit
+# Create submit button
 submit_button = tk.Button(root, text="Submit", command=submit)
 submit_button.pack(pady=20)
 
-# Executar a aplicação
+# Run the application
 root.mainloop()
