@@ -40,20 +40,16 @@ def handle_missing_values(df):
 def size_to_mb(size):
     log_message(f"Converting size: {size}")
     if pd.isna(size): # Se o tamanho for NaN, retornar NaN
-        print("Entrou no pd.isna")
         return np.nan
     if isinstance(size, str): # Se o tamanho for uma string
-        print("Entrou no isinstance")
         if 'M' in size or 'm' in size:
             return float(size.replace('M', '').replace('m', '').replace(',', '.'))
         elif 'K' in size or 'k' in size:
             return float(size.replace('K', '').replace('k', '').replace(',', '.')) / 1024
         elif 'G' in size or 'g' in size:
             return float(size.replace('G', '').replace('g', '').replace(',', '.')) * 1024
-
-    #print("Não entrou no isinstance")
-    #return np.nan
     return float(size)
+
 def parse_android_version(version):
     log_message(f"Parsing Android version: {version}")
     if pd.isna(version):
@@ -106,6 +102,15 @@ def predict_installs(new_app_data):
         log_message(f"Prediction with {model_name}: {prediction[0]}")
 
     return predictions
+
+# Função para atualizar o campo de preço quando o checkbox 'Free' é marcado
+def update_price():
+    if free_var.get():
+        price_entry.delete(0, tk.END)
+        price_entry.insert(0, '0.0')
+    else:
+        price_entry.delete(0, tk.END)
+        price_entry.insert(0, '0.0')
 
 # Criar interface Tkinter
 def on_submit():
@@ -163,6 +168,27 @@ def create_interface():
             checkbox = ttk.Checkbutton(root, variable=var)
             checkbox.grid(row=i, column=1, padx=10, pady=5, sticky=tk.W)
             entries.append(var)
+        elif label == "Category:":
+            category_var = tk.StringVar()
+            category_combobox = ttk.Combobox(root, textvariable=category_var, state="readonly")
+            category_combobox['values'] = [
+                'Action', 'Adventure', 'Arcade', 'Art & Design', 'Auto & Vehicles', 'Beauty', 'Board',
+                'Books & Reference', 'Business', 'Card', 'Casino', 'Casual', 'Comics', 'Communication',
+                'Dating', 'Education', 'Educational', 'Entertainment', 'Events', 'Finance', 'Food & Drink',
+                'Health & Fitness', 'House & Home', 'Libraries & Demo', 'Lifestyle', 'Maps & Navigation',
+                'Medical', 'Music', 'Music & Audio', 'News & Magazines', 'Parenting', 'Personalization',
+                'Photography', 'Productivity', 'Puzzle', 'Racing', 'Role Playing', 'Shopping', 'Simulation',
+                'Social', 'Sports', 'Strategy', 'Tools', 'Travel & Local', 'Trivia', 'Video Players & Editors',
+                'Weather', 'Word'
+            ]
+            category_combobox.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
+            entries.append(category_var)
+        elif label == "Content Rating:":
+            content_var = tk.StringVar()
+            content_combobox = ttk.Combobox(root, textvariable=content_var, state="readonly")
+            content_combobox['values'] = ['Everyone', 'Everyone 10+', 'Mature 17+', 'Teen']
+            content_combobox.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
+            entries.append(content_var)
         else:
             entry = ttk.Entry(root)
             entry.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
@@ -175,6 +201,8 @@ def create_interface():
     (category_entry, rating_entry, rating_count_entry, free_var, price_entry,
      size_entry, minimum_android_entry, content_rating_entry, ad_supported_var,
      in_app_purchases_var, editors_choice_var) = entries
+
+    free_var.trace_add("write", lambda *args: update_price())
 
     submit_button = ttk.Button(root, text="Submit", command=on_submit)
     submit_button.grid(row=len(labels), columnspan=2, pady=10)
