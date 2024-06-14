@@ -18,6 +18,9 @@ import matplotlib.pyplot as plt
 import graphviz
 import os
 from IPython.display import Image
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
 
 # Carregar o dataset
 data = pd.read_csv('Data/Google-Playstore.csv', nrows=8000)
@@ -27,13 +30,6 @@ data = data.drop(['App Name', 'App Id', 'Minimum Installs', 'Maximum Installs', 
                   'Developer Id', 'Developer Website', 'Developer Email', 'Released',
                   'Last Updated', 'Privacy Policy', 'Scraped Time'], axis=1)
 
-# Inspecionar os primeiros registros e verificar valores ausentes
-print("Dados iniciais:")
-print(data.head())
-print(data.info())
-print("Valores ausentes antes da imputação:")
-print(data.isnull().sum())
-
 # Remover linhas onde a variável alvo 'Installs' é nula
 data = data.dropna(subset=['Installs'])
 
@@ -41,11 +37,6 @@ data = data.dropna(subset=['Installs'])
 data['Installs'] = data['Installs'].str.replace('[+,]', '', regex=True)
 data['Installs'] = pd.to_numeric(data['Installs'], errors='coerce').astype('Int64')
 
-print("Exemplos de valores na coluna 'Installs' após a conversão:")
-print(data['Installs'].head(10))
-
-print("Valores ausentes após remoção de linhas com 'Installs' nulos:")
-print(data.isnull().sum())
 
 def handle_missing_values(df):
     df['Category'].fillna(df['Category'].mode()[0], inplace=True)
@@ -61,6 +52,7 @@ def handle_missing_values(df):
     df['In App Purchases'].fillna(False, inplace=True)
     df['Editors Choice'].fillna(False, inplace=True)
 
+
 def size_to_mb(size):
     if pd.isna(size):
         return np.nan
@@ -72,6 +64,7 @@ def size_to_mb(size):
         elif 'G' in size or 'g' in size:
             return float(size.replace('G', '').replace('g', '').replace(',', '.')) * 1024
     return np.nan
+
 
 def parse_android_version(version):
     if pd.isna(version):
@@ -88,6 +81,7 @@ def parse_android_version(version):
     except ValueError:
         return np.nan
 
+
 handle_missing_values(data)
 data['Minimum Android'] = data['Minimum Android'].apply(parse_android_version)
 mean_android_version = data['Minimum Android'].mean()
@@ -99,22 +93,21 @@ data['Minimum Android'] = [int(x * 10) / 10 for x in data['Minimum Android']]
 label_encoder_category = LabelEncoder()
 label_encoder_content_rating = LabelEncoder()
 data['Category'] = label_encoder_category.fit_transform(data['Category'])
-category_mapping = dict(zip(label_encoder_category.classes_, label_encoder_category.transform(label_encoder_category.classes_)))
+category_mapping = dict(
+    zip(label_encoder_category.classes_, label_encoder_category.transform(label_encoder_category.classes_)))
 data['Content Rating'] = label_encoder_content_rating.fit_transform(data['Content Rating'])
-content_mapping = dict(zip(label_encoder_content_rating.classes_, label_encoder_content_rating.transform(label_encoder_content_rating.classes_)))
-
-print("Content Mapping ", content_mapping, "\nCategory Mapping ", category_mapping)
+content_mapping = dict(zip(label_encoder_content_rating.classes_,
+                           label_encoder_content_rating.transform(label_encoder_content_rating.classes_)))
 
 # Preparação dos dados
-X = data[['Category', 'Rating','Rating Count', 'Free','Price','Size','Minimum Android','Content Rating', 'Ad Supported','In App Purchases','Editors Choice']]
+X = data[
+    ['Category', 'Rating', 'Rating Count', 'Free', 'Price', 'Size', 'Minimum Android', 'Content Rating', 'Ad Supported',
+     'In App Purchases', 'Editors Choice']]
 y = data['Installs']
 
-# Aplicar PCA para redução de dimensionalidade
-pca = PCA(n_components=5, svd_solver='auto')
-X_reduced = pca.fit_transform(X)
-
 # Dividir o dataset em treino e teste
-X_train, X_test, y_train, y_test = train_test_split(X_reduced, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
 
 # Função para avaliar o modelo
 def evaluate_model(name, model, X_train, y_train, X_test, y_test):
@@ -131,90 +124,109 @@ def evaluate_model(name, model, X_train, y_train, X_test, y_test):
     print(f"RMSE: {rmse:.4f}\n")
     return model
 
-print("Tamanho atual do dataframe:", data.shape)
 
 models = {}
-
-# Avaliar modelos e armazenar no dicionário
 models['Linear Regression'] = evaluate_model('Linear Regression', LinearRegression(), X_train, y_train, X_test, y_test)
 models['Ridge Regression'] = evaluate_model('Ridge Regression', Ridge(alpha=1.0), X_train, y_train, X_test, y_test)
 models['Lasso Regression'] = evaluate_model('Lasso Regression', Lasso(alpha=1.0), X_train, y_train, X_test, y_test)
-
-models['SVR (linear kernel)'] = evaluate_model('SVR (linear kernel)', SVR(kernel='linear'), X_train, y_train, X_test, y_test)
+models['Logistic Regression'] = evaluate_model('Logistic Regression', LogisticRegression(), X_train, y_train, X_test,
+                                               y_test)
+models['SVR (linear kernel)'] = evaluate_model('SVR (linear kernel)', SVR(kernel='linear'), X_train, y_train, X_test,
+                                               y_test)
 models['SVR (rbf kernel)'] = evaluate_model('SVR (rbf kernel)', SVR(kernel='rbf'), X_train, y_train, X_test, y_test)
 models['K-NN'] = evaluate_model('K-NN', KNeighborsRegressor(n_neighbors=2), X_train, y_train, X_test, y_test)
 models['Decision Tree'] = evaluate_model('Decision Tree', DecisionTreeRegressor(), X_train, y_train, X_test, y_test)
-
-models['Random Forest'] = evaluate_model('Random Forest', RandomForestRegressor(n_estimators=200), X_train, y_train, X_test, y_test)
-models['Neural Network (single layer)'] = evaluate_model('Neural Network (single layer)', MLPRegressor(hidden_layer_sizes=(10000,), max_iter=10000), X_train, y_train, X_test, y_test)
-models['Neural Network (multi layer)'] = evaluate_model('Neural Network (multi layer)', MLPRegressor(hidden_layer_sizes=(100, 50), max_iter=10000), X_train, y_train, X_test, y_test)
+models['K_Means'] = evaluate_model('K_Means', KMeans(n_clusters=4), X_train, y_train, X_test, y_test)
+models['Random Forest'] = evaluate_model('Random Forest', RandomForestRegressor(n_estimators=200), X_train, y_train,
+                                         X_test, y_test)
+models['Neural Network (single layer)'] = evaluate_model('Neural Network (single layer)',
+                                                         MLPRegressor(hidden_layer_sizes=(10000,), max_iter=10000),
+                                                         X_train, y_train, X_test, y_test)
+models['Neural Network (multi layer)'] = evaluate_model('Neural Network (multi layer)',
+                                                        MLPRegressor(hidden_layer_sizes=(100, 50), max_iter=10000),
+                                                        X_train, y_train, X_test, y_test)
 
 
 def preprocess_new_app(new_app):
-    # Verificar se new_app é um DataFrame, se não, converter para DataFrame
     if not isinstance(new_app, pd.DataFrame):
         new_app = pd.DataFrame([new_app], columns=X.columns)
 
-    # Preencher valores ausentes na nova aplicação
     handle_missing_values(new_app)
-
-    # Tratar a coluna 'Size'
     new_app['Size'] = new_app['Size'].apply(size_to_mb)
-
-    # Tratar a coluna 'Minimum Android'
     new_app['Minimum Android'] = new_app['Minimum Android'].apply(parse_android_version)
     new_app['Minimum Android'] = [int(x * 10) / 10 for x in new_app['Minimum Android']]
-
-    # Codificar
-def preprocess_new_app(new_app):
-    # Verificar se new_app é um DataFrame, se não, converter para DataFrame
-    if not isinstance(new_app, pd.DataFrame):
-        new_app = pd.DataFrame([new_app], columns=X.columns)
-
-    # Preencher valores ausentes na nova aplicação
-    handle_missing_values(new_app)
-
-    # Tratar a coluna 'Size'
-    new_app['Size'] = new_app['Size'].apply(size_to_mb)
-
-    # Tratar a coluna 'Minimum Android'
-    new_app['Minimum Android'] = new_app['Minimum Android'].apply(parse_android_version)
-    new_app['Minimum Android'] = [int(x * 10) / 10 for x in new_app['Minimum Android']]
-
-    # Codificar variáveis categóricas
     new_app['Category'] = new_app['Category'].apply(lambda x: category_mapping.get(x, -1))
     new_app['Content Rating'] = new_app['Content Rating'].apply(lambda x: content_mapping.get(x, -1))
-
-    # Verificar se há valores não reconhecidos e substituí-los por uma categoria válida (opcional)
     new_app['Category'] = new_app['Category'].replace(-1, category_mapping['Tools'])
     new_app['Content Rating'] = new_app['Content Rating'].replace(-1, content_mapping['Everyone'])
 
-    # Aplicar PCA para redução de dimensionalidade
-    new_app_reduced = pca.transform(new_app)
-
-    return new_app_reduced
+    return new_app
 
 
 def predict_installs(new_app_data):
-    # Pré-processar os dados da nova aplicação
     new_app_processed = preprocess_new_app(new_app_data)
-
-    # Previsões para cada modelo
     predictions = {}
     for model_name, model in models.items():
         prediction = model.predict(new_app_processed)
         predictions[model_name] = prediction[0]
-
-    # Imprimir previsões
-    for model_name, prediction in predictions.items():
-        print(f"{model_name}: {prediction:.0f} installs")
+    return predictions
 
 
-# Exemplo de dados de uma nova aplicação (formato CSV)
-new_app_csv = 'new_app_example.csv'  # Substitua pelo caminho para o seu arquivo CSV
+# Criar interface Tkinter
+def on_submit():
+    new_app_data = {
+        'Category': category_entry.get(),
+        'Rating': float(rating_entry.get()),
+        'Rating Count': int(rating_count_entry.get()),
+        'Free': free_entry.get().lower() == 'true',
+        'Price': float(price_entry.get()),
+        'Size': size_entry.get(),
+        'Minimum Android': minimum_android_entry.get(),
+        'Content Rating': content_rating_entry.get(),
+        'Ad Supported': ad_supported_entry.get().lower() == 'true',
+        'In App Purchases': in_app_purchases_entry.get().lower() == 'true',
+        'Editors Choice': editors_choice_entry.get().lower() == 'true'
+    }
 
-# Carregar exemplo de nova aplicação a partir de um arquivo CSV
-new_app_df = pd.read_csv(new_app_csv)
+    new_app_df = pd.DataFrame([new_app_data])
+    predictions = predict_installs(new_app_df)
 
-# Prever o número de instalações para a nova aplicação
-predict_installs(new_app_df)
+    prediction_message = "\n".join([f"{model}: {int(pred)} installs" for model, pred in predictions.items()])
+    messagebox.showinfo("Previsão", prediction_message)
+
+
+def create_interface():
+    root = tk.Tk()
+    root.title("App Information")
+
+    labels = [
+        "Category:", "Rating:", "Rating Count:", "Free:", "Price:",
+        "Size:", "Minimum Android:", "Content Rating:", "Ad Supported:",
+        "In App Purchases:", "Editors Choice:"
+    ]
+
+    entries = []
+
+    for i, label in enumerate(labels):
+        ttk.Label(root, text=label).grid(row=i, column=0, padx=10, pady=5, sticky=tk.W)
+        entry = ttk.Entry(root)
+        entry.grid(row=i, column=1, padx=10, pady=5, sticky=tk.EW)
+        entries.append(entry)
+
+    global category_entry, rating_entry, rating_count_entry, free_entry, price_entry
+    global size_entry, minimum_android_entry, content_rating_entry, ad_supported_entry
+    global in_app_purchases_entry, editors_choice_entry
+
+    (category_entry, rating_entry, rating_count_entry, free_entry, price_entry,
+     size_entry, minimum_android_entry, content_rating_entry, ad_supported_entry,
+     in_app_purchases_entry, editors_choice_entry) = entries
+
+    submit_button = ttk.Button(root, text="Submit", command=on_submit)
+    submit_button.grid(row=len(labels), columnspan=2, pady=10)
+
+    root.columnconfigure(0, weight=1)
+    root.columnconfigure(1, weight=2)
+    root.mainloop()
+
+    if __name__ == "__main__":
+        create_interface()

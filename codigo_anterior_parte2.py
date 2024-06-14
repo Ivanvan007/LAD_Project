@@ -26,7 +26,7 @@ full_path = os.path.join(file_path, file_name)
 
 #Start CSV File Reading
 #Ler-se-ão apenas as primeiras 30000 linhas do arquivo
-dfGPlayStore = pd.read_csv(full_path,nrows=5000)
+dfGPlayStore = pd.read_csv(full_path,nrows=250000)
 #dfGPlayStore = pd.read_csv(full_path) #descomentar para usar o dataset enteiro. comentar a linha de cima #dfGPlayStore = dfGPlayStore.dropna()
 #CSV File Reading Finished
 
@@ -768,10 +768,10 @@ models = {
     'Linear Regression': LinearRegression(),
     'Ridge Regression': Ridge(alpha=1.0),
     'Lasso Regression': Lasso(alpha=1.0),
-    'Logistic Regression': LogisticRegression(),
+    #'Logistic Regression': LogisticRegression(),
     'K-Nearest Neighbors(regressor)': KNeighborsRegressor(n_neighbors=5),
     'K-Nearest Neighbors(classifier)': KNeighborsClassifier(n_neighbors=5),
-    'k_Means': KMeans(n_clusters=4),
+    #'k_Means': KMeans(n_clusters=4),
     'Decision Tree': DecisionTreeRegressor(),
     'Random Forest': RandomForestRegressor(),
     'Neural Network(single layer)': MLPRegressor(hidden_layer_sizes=(10,), max_iter=1000),
