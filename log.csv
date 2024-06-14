@@ -1,0 +1,258 @@
+New app data: {'Category': 'Productivity', 'Rating': 4.3, 'Rating Count': 241000, 'Free': True, 'Price': 0.0, 'Size': '3', 'Minimum Android': '10', 'Content Rating': 'Everyone', 'Ad Supported': False, 'In App Purchases': True, 'Editors Choice': True}
+Preprocessing new app...
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.3,241000,True,0.0,3,10,Everyone,False,True,True
+
+Initial new app data:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.3,241000,True,0.0,3,10,Everyone,False,True,True
+
+Handling missing values...
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.3,241000,True,0.0,3,10,Everyone,False,True,True
+
+Converting size: 3
+After handling missing values:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.3,241000,True,0.0,,10,Everyone,False,True,True
+
+Converting size: nan
+After converting size:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.3,241000,True,0.0,,10,Everyone,False,True,True
+
+Parsing Android version: 10
+After parsing Android version:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.3,241000,True,0.0,,10.0,Everyone,False,True,True
+
+After encoding categories:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+33,4.3,241000,True,0.0,,10.0,0,False,True,True
+
+Data after preprocessing contains NaN:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+33,4.3,241000,True,0.0,,10.0,0,False,True,True
+
+ValueError: Input contains NaN after preprocessing.
+New app data: {'Category': 'Productivity', 'Rating': 4.3, 'Rating Count': 241000, 'Free': True, 'Price': 0.0, 'Size': '3', 'Minimum Android': '10', 'Content Rating': 'Everyone', 'Ad Supported': False, 'In App Purchases': True, 'Editors Choice': True}
+Preprocessing new app...
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.3,241000,True,0.0,3,10,Everyone,False,True,True
+
+Initial new app data:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.3,241000,True,0.0,3,10,Everyone,False,True,True
+
+Handling missing values...
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.3,241000,True,0.0,3,10,Everyone,False,True,True
+
+Converting size: 3
+After handling missing values:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.3,241000,True,0.0,,10,Everyone,False,True,True
+
+Converting size: nan
+After converting size:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.3,241000,True,0.0,,10,Everyone,False,True,True
+
+Parsing Android version: 10
+After parsing Android version:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.3,241000,True,0.0,,10.0,Everyone,False,True,True
+
+After encoding categories:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+33,4.3,241000,True,0.0,,10.0,0,False,True,True
+
+Data after preprocessing contains NaN:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+33,4.3,241000,True,0.0,,10.0,0,False,True,True
+
+ValueError: Input contains NaN after preprocessing.
+New app data: {'Category': 'Productivity', 'Rating': 4.1, 'Rating Count': 241000, 'Free': True, 'Price': 0.0, 'Size': '3', 'Minimum Android': '10', 'Content Rating': 'Everyone', 'Ad Supported': False, 'In App Purchases': True, 'Editors Choice': True}
+Preprocessing new app...
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3,10,Everyone,False,True,True
+
+Initial new app data:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3,10,Everyone,False,True,True
+
+Handling missing values...
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3,10,Everyone,False,True,True
+
+Converting size: 3
+Exception: Could not convert string '3' to numeric
+Traceback (most recent call last):
+  File "C:\Users\utilizador\OneDrive\19_nov_23_onedrive\UPT\23-24_Ano_3\semestre_2\lad\trabalho\entrega_1\submeter\colocar aqui projeto pycharm\LAD_Project\app_interface.py", line 136, in on_submit
+    predictions = predict_installs(new_app_df)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\utilizador\OneDrive\19_nov_23_onedrive\UPT\23-24_Ano_3\semestre_2\lad\trabalho\entrega_1\submeter\colocar aqui projeto pycharm\LAD_Project\app_interface.py", line 97, in predict_installs
+    new_app_processed = preprocess_new_app(new_app_data)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\utilizador\OneDrive\19_nov_23_onedrive\UPT\23-24_Ano_3\semestre_2\lad\trabalho\entrega_1\submeter\colocar aqui projeto pycharm\LAD_Project\app_interface.py", line 79, in preprocess_new_app
+    handle_missing_values(new_app)
+  File "C:\Users\utilizador\OneDrive\19_nov_23_onedrive\UPT\23-24_Ano_3\semestre_2\lad\trabalho\entrega_1\submeter\colocar aqui projeto pycharm\LAD_Project\app_interface.py", line 32, in handle_missing_values
+    df['Size'].fillna(df['Size'].mean(), inplace=True)
+                      ^^^^^^^^^^^^^^^^^
+  File "C:\Users\utilizador\anaconda3\Lib\site-packages\pandas\core\series.py", line 6225, in mean
+    return NDFrame.mean(self, axis, skipna, numeric_only, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\utilizador\anaconda3\Lib\site-packages\pandas\core\generic.py", line 11992, in mean
+    return self._stat_function(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\utilizador\anaconda3\Lib\site-packages\pandas\core\generic.py", line 11949, in _stat_function
+    return self._reduce(
+           ^^^^^^^^^^^^^
+  File "C:\Users\utilizador\anaconda3\Lib\site-packages\pandas\core\series.py", line 6133, in _reduce
+    return op(delegate, skipna=skipna, **kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\utilizador\anaconda3\Lib\site-packages\pandas\core\nanops.py", line 147, in f
+    result = alt(values, axis=axis, skipna=skipna, **kwds)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\utilizador\anaconda3\Lib\site-packages\pandas\core\nanops.py", line 404, in new_func
+    result = func(values, axis=axis, skipna=skipna, mask=mask, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\utilizador\anaconda3\Lib\site-packages\pandas\core\nanops.py", line 720, in nanmean
+    the_sum = _ensure_numeric(the_sum)
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\utilizador\anaconda3\Lib\site-packages\pandas\core\nanops.py", line 1693, in _ensure_numeric
+    raise TypeError(f"Could not convert string '{x}' to numeric")
+TypeError: Could not convert string '3' to numeric
+
+New app data: {'Category': 'Productivity', 'Rating': 4.1, 'Rating Count': 241000, 'Free': True, 'Price': 0.0, 'Size': '3', 'Minimum Android': '10', 'Content Rating': 'Everyone', 'Ad Supported': False, 'In App Purchases': True, 'Editors Choice': True}
+Preprocessing new app...
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3,10,Everyone,False,True,True
+
+Initial new app data:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3,10,Everyone,False,True,True
+
+Handling missing values...
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3,10,Everyone,False,True,True
+
+Converting size: 3
+After handling missing values:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3.0,10,Everyone,False,True,True
+
+Converting size: 3.0
+After converting size:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3.0,10,Everyone,False,True,True
+
+Parsing Android version: 10
+After parsing Android version:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3.0,10.0,Everyone,False,True,True
+
+After encoding categories:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+33,4.1,241000,True,0.0,3.0,10.0,0,False,True,True
+
+Prediction with Linear Regression: 10572300.852582105
+Prediction with Ridge Regression: 11275485.578438878
+Prediction with Lasso Regression: 10574432.667439867
+Prediction with Logistic Regression: 10000000.0
+Prediction with SVR (linear kernel): 8219673.096777803
+Prediction with SVR (rbf kernel): 578.3205914954231
+Prediction with K-NN: 7500000.0
+Prediction with Decision Tree: 10000000.0
+Prediction with K_Means: 2
+Prediction with Random Forest: 7220000.0
+Prediction with Neural Network (single layer): 13431880.556609176
+Prediction with Neural Network (multi layer): 13350168.837966083
+New app data: {'Category': 'Productivity', 'Rating': 4.1, 'Rating Count': 241000, 'Free': True, 'Price': 0.0, 'Size': '3', 'Minimum Android': '10', 'Content Rating': 'Everyone', 'Ad Supported': False, 'In App Purchases': True, 'Editors Choice': True}
+Preprocessing new app...
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3,10,Everyone,False,True,True
+
+Initial new app data:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3,10,Everyone,False,True,True
+
+Handling missing values...
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3,10,Everyone,False,True,True
+
+Converting size: 3
+After handling missing values:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3.0,10,Everyone,False,True,True
+
+Converting size: 3.0
+After converting size:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3.0,10,Everyone,False,True,True
+
+Parsing Android version: 10
+After parsing Android version:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3.0,10.0,Everyone,False,True,True
+
+After encoding categories:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+33,4.1,241000,True,0.0,3.0,10.0,0,False,True,True
+
+Prediction with Linear Regression: 10572300.852582105
+Prediction with Ridge Regression: 11275485.578438878
+Prediction with Lasso Regression: 10574432.667439867
+Prediction with Logistic Regression: 10000000.0
+Prediction with SVR (linear kernel): 8219673.096777803
+Prediction with SVR (rbf kernel): 578.3205914954231
+Prediction with K-NN: 7500000.0
+Prediction with Decision Tree: 10000000.0
+Prediction with K_Means: 2
+Prediction with Random Forest: 7220000.0
+Prediction with Neural Network (single layer): 13431880.556609176
+Prediction with Neural Network (multi layer): 13350168.837966083
+New app data: {'Category': 'Productivity', 'Rating': 4.1, 'Rating Count': 241000, 'Free': True, 'Price': 0.0, 'Size': '3', 'Minimum Android': '10', 'Content Rating': 'Everyone', 'Ad Supported': False, 'In App Purchases': True, 'Editors Choice': True}
+Preprocessing new app...
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3,10,Everyone,False,True,True
+
+Initial new app data:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3,10,Everyone,False,True,True
+
+Handling missing values...
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3,10,Everyone,False,True,True
+
+Converting size: 3
+After handling missing values:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3.0,10,Everyone,False,True,True
+
+Converting size: 3.0
+After converting size:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3.0,10,Everyone,False,True,True
+
+Parsing Android version: 10
+After parsing Android version:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+Productivity,4.1,241000,True,0.0,3.0,10.0,Everyone,False,True,True
+
+After encoding categories:
+Category,Rating,Rating Count,Free,Price,Size,Minimum Android,Content Rating,Ad Supported,In App Purchases,Editors Choice
+33,4.1,241000,True,0.0,3.0,10.0,0,False,True,True
+
+Prediction with Linear Regression: 10572300.852582105
+Prediction with Ridge Regression: 11275485.578438878
+Prediction with Lasso Regression: 10574432.667439867
+Prediction with Logistic Regression: 10000000.0
+Prediction with SVR (linear kernel): 8219673.096777803
+Prediction with SVR (rbf kernel): 578.3205914954231
+Prediction with K-NN: 7500000.0
+Prediction with Decision Tree: 10000000.0
+Prediction with K_Means: 2
+Prediction with Random Forest: 7220000.0
+Prediction with Neural Network (single layer): 13431880.556609176
+Prediction with Neural Network (multi layer): 13350168.837966083
