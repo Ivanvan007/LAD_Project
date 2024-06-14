@@ -16,10 +16,10 @@ content_mapping = joblib.load('content_mapping.pkl')
 # Função para logar mensagens em CSV
 def log_message(message, data=None):
     print(message)
-    if data is not None:
-        message += f"\n{data.to_csv(index=False)}"
-    with open('log.csv', 'a') as log_file:
-        log_file.write(message + '\n')
+    # if data is not None:
+    #     message += f"\n{data.to_csv(index=False)}"
+    # with open('log.csv', 'a') as log_file:
+    #     log_file.write(message + '\n')
 
 def handle_missing_values(df):
     log_message("Handling missing values...", df)
