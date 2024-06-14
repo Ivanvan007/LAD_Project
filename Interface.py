@@ -4,7 +4,8 @@ from tkinter import messagebox, ttk
 import numpy as np
 import pandas as pd
 import joblib
-'''from sklearn.model_selection import train_test_split
+'''
+from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, Ridge, Lasso, LogisticRegression
 from sklearn.cluster import KMeans
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
@@ -20,7 +21,8 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import graphviz
-from IPython.display import Image'''
+from IPython.display import Image
+'''
 
 # Load the trained model
 #try:
