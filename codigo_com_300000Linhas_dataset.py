@@ -26,7 +26,7 @@ full_path = os.path.join(file_path, file_name)
 
 #Start CSV File Reading
 #Ler-se-ão apenas as primeiras 30000 linhas do arquivo
-dfGPlayStore = pd.read_csv(full_path,nrows=250000)
+dfGPlayStore = pd.read_csv(full_path,nrows=300000)
 #dfGPlayStore = pd.read_csv(full_path) #descomentar para usar o dataset enteiro. comentar a linha de cima #dfGPlayStore = dfGPlayStore.dropna()
 #CSV File Reading Finished
 
